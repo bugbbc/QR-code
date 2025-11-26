@@ -1,0 +1,395 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  color: #222;
+  background: #f7f8fa;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background: #ffffffcc;
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #eee;
+  z-index: 10;
+}
+.header h1 {
+  margin: 0;
+  padding: 16px 20px;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 28px;
+  letter-spacing: 0.6px;
+  background: linear-gradient(90deg, #111, #444, #111);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-title {
+  margin: 10px 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.content {
+  padding: 10px 16px;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 14px;
+  margin: 10px 0;
+}
+.text-block {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #444;
+}
+.links a {
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  color: #0b72ff;
+  text-decoration: none;
+}
+.links a:hover {
+  text-decoration: underline;
+}
+
+.footer {
+  margin-top: 16px;
+  padding: 20px;
+  text-align: center;
+  color: #777;
+}
+.footer a {
+  color: #0b72ff;
+}
+.hidden {
+  display: none !important;
+}
+.invalid {
+  text-align: center;
+  color: #b00020;
+}
+.scan-hint {
+  border-left: 4px solid #0b72ff;
+}
+.scan-hint p {
+  margin: 6px 0 0;
+  font-weight: 600;
+  color: #333;
+}
+.scan-hint.warning {
+  border-color: #d32f2f;
+  background: #fff5f5;
+  color: #b00020;
+}
+.scan-counter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.counter-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.counter-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+.counter-remaining {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0b72ff;
+}
+#counter-detail {
+  margin: 0;
+  color: #555;
+}
+
+/* 加载遮罩与动画 */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid #e6e6e6;
+  border-top-color: #0b72ff;
+  animation: spin 0.8s linear infinite;
+}
+.loading-text {
+  margin-top: 12px;
+  color: #333;
+  font-size: 14px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 轮播 */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 10px 16px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+/* 轮播尺寸加大并保持完整显示 */
+.carousel-item {
+  min-width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.carousel-item img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+/* 让轮播作为侧栏并实现文字环绕 */
+.carousel.inline {
+  float: right;
+  width: min(60%, 360px);
+  margin: 0 0 10px 12px;
+}
+.carousel.inline.left {
+  float: left;
+  width: min(70%, 420px);
+  margin: 0 14px 12px 0;
+}
+.card::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.carousel-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.carousel-btn {
+  pointer-events: auto;
+  background: #ffffffcc;
+  backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  margin: 0 8px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+}
+.carousel-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  display: flex;
+  gap: 6px;
+  background: #00000040;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ddd;
+}
+.dot.active {
+  background: #0b72ff;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal-content {
+  width: min(92%, 520px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+.modal-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 8px;
+}
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+.btn.primary {
+  background: #0b72ff;
+  color: #fff;
+}
+.btn.secondary {
+  background: #eef2ff;
+  color: #0b1f4d;
+}
+
+/* 响应式 */
+@media (max-width: 767px) {
+  .carousel.inline {
+    float: none;
+    width: 92%;
+    margin: 10px auto;
+  }
+}
+@media (min-width: 768px) {
+  .carousel-item {
+    height: 360px;
+  }
+  .header h1 {
+    font-size: 40px;
+  }
+}
+
+/* 顶部艺术字 */
+.hero-art {
+  padding: 6px 16px 12px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ff7a59, #fbd786, #c6ffdd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.modal-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 8px;
+}
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+.btn.primary {
+  background: #0b72ff;
+  color: #fff;
+}
+
+.limit-card {
+  max-width: 640px;
+  margin: 20px auto 60px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+.limit-status {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #fff4f4;
+  color: #d32f2f;
+  font-size: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 2px rgba(211, 47, 47, 0.2);
+}
+.limit-card h2 {
+  margin: 0 0 10px;
+  font-size: 26px;
+}
+.limit-card p {
+  margin: 0 0 14px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+.limit-badge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.limit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 18px 0;
+}
+.limit-hint {
+  display: block;
+  color: #6b7280;
+}

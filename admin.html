@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>后台管理</title>
+    <link rel="stylesheet" href="./style.css?v={{ts}}" />
+    <style>
+      .login {
+        max-width: 420px;
+        margin: 40px auto;
+      }
+      .form-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .form-row label {
+        width: 90px;
+        color: #555;
+      }
+      .form-row input,
+      .form-row textarea {
+        flex: 1;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .card h3 {
+        margin-top: 0;
+      }
+      .qr-box {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      #qrcode {
+        width: 280px;
+        height: 280px;
+        background: #fff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .stats-table th,
+      .stats-table td {
+        border: 1px solid #eee;
+        padding: 6px 8px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header"><h1>后台管理系统</h1></header>
+    <main class="content">
+      <section id="login-section" class="card login">
+        <h3>管理员登录</h3>
+        <div class="form-row">
+          <label>用户名</label><input id="username" placeholder="admin" />
+        </div>
+        <div class="form-row">
+          <label>密码</label
+          ><input id="password" type="password" placeholder="password123" />
+        </div>
+        <button id="login-btn" class="btn primary">登录</button>
+      </section>
+
+      <section id="admin-section" class="hidden">
+        <div class="grid">
+          <div class="card">
+            <h3>商品内容管理</h3>
+            <div class="form-row">
+              <label>产品ID</label
+              ><input id="productId" placeholder="default-product" />
+            </div>
+            <div class="form-row"><label>名称</label><input id="name" /></div>
+            <div class="form-row">
+              <label>规格参数</label><textarea id="specs" rows="4"></textarea>
+            </div>
+            <div class="form-row">
+              <label>功能介绍</label
+              ><textarea id="features" rows="6"></textarea>
+            </div>
+            <div class="form-row">
+              <label>使用说明</label><textarea id="usage" rows="4"></textarea>
+            </div>
+            <div class="form-row">
+              <label>联系方式</label><textarea id="contact" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <label>购买链接1</label><input id="link1" />
+            </div>
+            <div class="form-row">
+              <label>购买链接2</label><input id="link2" />
+            </div>
+            <div class="form-row">
+              <label>优惠文案</label><input id="couponText" />
+            </div>
+            <div class="form-row">
+              <label>优惠链接</label><input id="couponUrl" />
+            </div>
+            <div class="form-row">
+              <label>扫码上限</label
+              ><input id="scanLimit" type="number" min="1" value="3" />
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button id="save-btn" class="btn primary">保存并立即生效</button>
+              <button id="export-json" class="btn">导出配置 JSON</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>数据统计</h3>
+            <p>
+              总扫描次数：<span id="totalScans">0</span>，设备数：<span
+                id="deviceCount"
+                >0</span
+              >
+            </p>
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th>类别</th>
+                  <th>次数</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>首次扫描</td>
+                  <td id="firstCount">0</td>
+                </tr>
+                <tr>
+                  <td>第2-3次扫描</td>
+                  <td id="secondCount">0</td>
+                </tr>
+                <tr>
+                  <td>失效（≥4）</td>
+                  <td id="invalidCount">0</td>
+                </tr>
+              </tbody>
+            </table>
+            <h4>设备类型</h4>
+            <ul>
+              <li>Android：<span id="androidCount">0</span></li>
+              <li>iOS：<span id="iosCount">0</span></li>
+              <li>其他：<span id="otherCount">0</span></li>
+            </ul>
+            <h4>地域（统计采样）</h4>
+            <div id="regions" class="text-block"></div>
+            <div style="margin-top: 8px; display: flex; gap: 8px">
+              <button id="refresh-stats" class="btn">刷新统计</button>
+              <button id="reset-stats" class="btn">清除统计与计数</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="card" id="code-management">
+          <h3>一物一码 / 防伪二维码批量生成</h3>
+          <p style="color: #555">
+            每个二维码都会绑定唯一编码与扫码上限，扫码时需带上
+            <code>code</code> 参数（形如
+            <code>?id=xxx&amp;code=XXXX</code>），超过限制即判定为失效。
+          </p>
+          <div class="form-row">
+            <label>API 服务地址</label>
+            <input
+              id="apiBase"
+              placeholder="例如：http://localhost:5001 或 https://api.example.com"
+            />
+          </div>
+          <div class="form-row">
+            <label>生成产品ID</label>
+            <input id="codeProductId" placeholder="留空则使用上方的产品ID" />
+          </div>
+          <div class="form-row">
+            <label>生成数量</label>
+            <input
+              id="codeQuantity"
+              type="number"
+              min="1"
+              max="500"
+              value="10"
+            />
+          </div>
+          <div class="form-row">
+            <label>扫码上限</label>
+            <input id="codeScanLimit" type="number" min="1" value="3" />
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button id="generate-codes" class="btn primary">
+              批量生成二维码
+            </button>
+            <button id="refresh-code-list" class="btn">刷新二维码列表</button>
+          </div>
+          <div id="latest-code-batch" class="hidden" style="margin-top: 16px">
+            <h4>最新生成结果</h4>
+            <p>
+              共生成 <strong id="latest-code-count">0</strong> 个二维码。
+              <button
+                id="download-latest-csv"
+                class="btn"
+                style="margin-left: 8px"
+              >
+                导出CSV
+              </button>
+            </p>
+            <div style="overflow-x: auto">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>二维码</th>
+                    <th>Code</th>
+                    <th>Token</th>
+                    <th>扫描链接</th>
+                    <th>创建时间</th>
+                  </tr>
+                </thead>
+                <tbody id="latest-code-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div style="margin-top: 16px">
+            <h4>当前产品的全部二维码</h4>
+            <p id="code-empty" style="color: #777">暂无记录，请先生成。</p>
+            <div style="overflow-x: auto">
+              <table class="stats-table" id="code-table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>状态</th>
+                    <th>累计扫描</th>
+                    <th>上限</th>
+                    <th>创建时间</th>
+                    <th>最近扫码</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="code-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <div class="card">
+          <h3>动态二维码生成与下载</h3>
+          <div class="qr-box">
+            <div id="qrcode"></div>
+            <div>
+              <p>扫描跳转链接：<code id="qr-url"></code></p>
+              <button id="gen-qr" class="btn">生成二维码</button>
+              <button id="download-qr" class="btn primary">下载高清PNG</button>
+            </div>
+          </div>
+          <small
+            >说明：二维码指向统一商品详情页，通过产品ID读取配置，修改内容无需重新生成二维码。</small
+          >
+          <div class="card">
+            <h2>Dynamic QR Code Settings</h2>
+            <div class="form-row">
+              <label for="serverHost">服务器主机（供手机访问）</label>
+              <input
+                id="serverHost"
+                type="text"
+                placeholder="例如：192.168.1.100:8000"
+              />
+              <small
+                >提示：<br />
+                1. 本地测试：输入局域网IP加端口，如 192.168.1.100:8000<br />
+                2. 使用域名：直接输入您的域名，如
+                your-domain.com（系统会自动识别HTTPS）<br />
+                3. 若为空则使用当前浏览器的主机</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>离线二维码生成（完全自包含）</h3>
+          <div
+            style="
+              background: #e7f3ff;
+              border-left: 4px solid #0b72ff;
+              padding: 12px;
+              margin-bottom: 16px;
+              border-radius: 4px;
+            "
+          >
+            <strong>✨ 核心特点：</strong>
+            <p style="margin: 8px 0 0 0; color: #333">
+              <strong
+                >扫码后直接显示您设计的HTML页面，无需跳转到任何URL！</strong
+              ><br />
+              二维码本身包含完整的HTML内容（CSS、JS、图片全部内联），扫码后浏览器直接解析显示，完全离线可用。
+            </p>
+          </div>
+          <p style="color: #666; margin-bottom: 16px">
+            与上方的"动态二维码"不同，离线二维码不依赖服务器，内容完全编码在二维码中。
+          </p>
+
+          <div class="form-row">
+            <label>纠错等级</label>
+            <select
+              id="offline-qr-level"
+              style="
+                flex: 1;
+                padding: 8px 10px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+              "
+            >
+              <option value="L">L (约7%纠错)</option>
+              <option value="M">M (约15%纠错)</option>
+              <option value="Q" selected>Q (约25%纠错，推荐)</option>
+              <option value="H">H (约30%纠错，最大容错)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>图片处理</label>
+            <div style="flex: 1">
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/*"
+                multiple
+                style="display: none"
+              />
+              <button
+                id="upload-images-btn"
+                class="btn"
+                style="margin-right: 8px"
+              >
+                上传图片（转为Base64）
+              </button>
+              <small style="display: block; margin-top: 4px; color: #666">
+                提示：上传figure目录下的图片（up_1.jpg ~ up_7.jpg, down_1.jpg ~
+                down_6.jpg），系统将自动转换为Base64并内联到HTML中。<br />
+                也可以使用
+                <a href="./image-converter.html" target="_blank"
+                  >图片转换工具</a
+                >
+                预先处理图片。
+              </small>
+            </div>
+          </div>
+
+          <div
+            id="uploaded-images"
+            style="
+              margin: 12px 0;
+              padding: 12px;
+              background: #f5f5f5;
+              border-radius: 8px;
+              display: none;
+            "
+          >
+            <strong>已上传图片：</strong>
+            <div
+              id="image-list"
+              style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px"
+            ></div>
+          </div>
+
+          <div
+            style="
+              margin: 16px 0;
+              padding: 12px;
+              background: #fff3cd;
+              border-radius: 8px;
+              border-left: 4px solid #ffc107;
+            "
+          >
+            <strong>⚠️ 重要提示：</strong>
+            <ul style="margin: 8px 0 0 20px; padding: 0">
+              <li>
+                <strong>扫码后直接显示HTML页面，不跳转到任何URL！</strong
+                >二维码使用 data:text/html;base64, 协议
+              </li>
+              <li>离线二维码包含完整HTML内容，建议页面大小控制在2MB以内</li>
+              <li>图片建议压缩后再上传，以减小二维码复杂度</li>
+              <li>
+                部分扫码工具可能不支持 data:
+                协议，建议使用微信、支付宝或系统相机扫码测试
+              </li>
+              <li>
+                生成后建议先点击"预览HTML页面"查看效果，确认无误后再下载二维码
+              </li>
+            </ul>
+          </div>
+
+          <div class="qr-box" style="margin-top: 16px">
+            <div
+              id="offline-qrcode"
+              style="
+                width: 280px;
+                height: 280px;
+                background: #fff;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px dashed #ddd;
+              "
+            ></div>
+            <div>
+              <p><strong>二维码信息：</strong></p>
+              <p>HTML大小：<span id="html-size">-</span></p>
+              <p>Base64大小：<span id="base64-size">-</span></p>
+              <p>二维码版本：<span id="qr-version">-</span></p>
+              <div
+                style="
+                  margin-top: 12px;
+                  display: flex;
+                  gap: 8px;
+                  flex-wrap: wrap;
+                "
+              >
+                <button id="gen-offline-qr" class="btn primary">
+                  生成离线二维码
+                </button>
+                <button
+                  id="preview-offline-html"
+                  class="btn"
+                  style="background: #28a745; color: white"
+                >
+                  预览HTML页面
+                </button>
+                <button id="download-offline-qr" class="btn">
+                  下载离线二维码PNG
+                </button>
+                <button id="download-offline-html" class="btn">
+                  下载离线HTML文件
+                </button>
+              </div>
+              <small style="display: block; margin-top: 8px; color: #666">
+                💡
+                提示：生成二维码后，点击"预览HTML页面"可以在浏览器中直接查看效果（模拟扫码后的显示），确认无误后再下载二维码。
+              </small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- QRCode 库（CDN） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      (function () {
+        const ts = Date.now();
+        const link = document.querySelector('link[rel="stylesheet"]');
+        if (link) link.href = link.href.replace("{{ts}}", ts);
+      })();
+    </script>
+    <script src="./admin.js?v={{ts}}"></script>
+  </body>
+</html>

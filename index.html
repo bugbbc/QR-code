@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Miracle White</title>
+    <link rel="stylesheet" href="./style.css?v={{ts}}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Loading overlay -->
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading, please wait...</div>
+    </div>
+
+    <header class="header">
+      <h1 id="product-name">Improved composition with finest ingredients.</h1>
+    </header>
+    <div id="hero-art" class="hero-art">Premium Product Experience</div>
+
+    <main id="product-main" class="content">
+      <section id="scan-counter" class="card scan-counter">
+        <div class="counter-header">
+          <span class="counter-label">Scan Tracker</span>
+          <span id="counter-remaining" class="counter-remaining">3 left</span>
+        </div>
+        <p id="counter-detail">Waiting for scan data...</p>
+      </section>
+      <section class="card">
+        <h3>Specifications</h3>
+        <div id="product-specs" class="text-block"></div>
+      </section>
+      <section class="card">
+        <h3>Features</h3>
+        <div id="carousel-top" class="carousel inline"></div>
+        <div id="product-features" class="text-block"></div>
+      </section>
+      <section class="card">
+        <h3>How to Use</h3>
+        <div id="carousel-bottom" class="carousel inline left"></div>
+        <div id="product-usage" class="text-block"></div>
+      </section>
+      <section class="card">
+        <h3>Customer Support</h3>
+        <div id="product-contact" class="text-block"></div>
+      </section>
+
+      <section id="purchase-links" class="card hidden">
+        <h3>Purchase Options</h3>
+        <div class="links"></div>
+      </section>
+
+      <div id="coupon-modal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Returning Customer Offer</h3>
+            <button id="close-coupon" class="icon-btn" aria-label="Close">
+              ✕
+            </button>
+          </div>
+          <div id="coupon-text" class="text-block"></div>
+          <div class="modal-actions">
+            <a
+              id="coupon-link"
+              class="btn primary"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              >Claim Coupon</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <section id="scan-hint" class="card hidden scan-hint">
+        <h3>Device Scan Status</h3>
+        <p id="scan-hint-text">Collecting scan information...</p>
+      </section>
+
+      <section id="invalid-section" class="invalid card hidden">
+        <h3>This QR code is invalid</h3>
+        <p>Please purchase a new product for a new code.</p>
+      </section>
+
+      <section class="card" id="support-bottom">
+        <h3>Customer Support</h3>
+        <div id="product-contact" class="text-block"></div>
+      </section>
+    </main>
+
+    <section id="limit-view" class="limit-card hidden">
+      <div class="limit-status">!</div>
+      <h2>Scan Limit Reached</h2>
+      <p>
+        This QR code has already been scanned the maximum number of times.
+        Please request a fresh code from your retailer or contact support.
+      </p>
+      <div id="limit-code" class="limit-badge hidden">
+        Code: <span id="limit-code-value"></span>
+      </div>
+      <div class="limit-actions">
+        <button id="limit-retry" class="btn primary">
+          Back to product page
+        </button>
+        <a
+          id="limit-support"
+          class="btn secondary"
+          href="mailto:support@example.com"
+          >Contact support</a
+        >
+      </div>
+      <small class="limit-hint">
+        Purchased this item recently but still see this screen? Reach out and we
+        will help you verify authenticity.
+      </small>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <small
+          >© Demo page. Admin:
+          <a id="admin-link" href="./admin.html">Admin Panel</a></small
+        >
+      </div>
+    </footer>
+
+    <script>
+      // 通过时间戳避免缓存
+      (function () {
+        const ts = Date.now();
+        const link = document.querySelector('link[rel="stylesheet"]');
+        if (link) link.href = link.href.replace("{{ts}}", ts);
+      })();
+    </script>
+    <script src="./app.js?v={{ts}}"></script>
+  </body>
+</html>
