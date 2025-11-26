@@ -1,8 +1,20 @@
+// functions/api/scan.js
+
 export async function onRequestPost(context) {
   try {
-    // 1. 获取请求数据
     const { request, env } = context;
-    const body = await request.json();
+
+    // 1. 获取 POST 传来的 JSON
+    let body = {};
+    try {
+      body = await request.json();
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "INVALID_JSON" }),
+        { status: 400 }
+      );
+    }
+
     const { codeId, deviceId } = body;
 
     if (!codeId || !deviceId) {
@@ -12,7 +24,7 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 2. 从 KV 数据库读取数据 (替代 load_db)
+    // 2. 从 KV 读取二维码数据
     const rawData = await env.CODES_KV.get(codeId);
     if (!rawData) {
       return new Response(
@@ -21,44 +33,43 @@ export async function onRequestPost(context) {
       );
     }
 
-    let codeData = JSON.parse(rawData);
+    let codeData = {};
+    try {
+      codeData = JSON.parse(rawData);
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "INVALID_DB_DATA" }),
+        { status: 500 }
+      );
+    }
 
-    // 3. 检查逻辑 (对应 Python 中的 scan 函数)
-    // 确保默认值存在
+    // 3. 设置默认值
     const limit = parseInt(codeData.scanLimit) || 3;
     let total = parseInt(codeData.totalCount) || 0;
-    let deviceCounts = codeData.deviceCounts || {};
+    const deviceCounts = codeData.deviceCounts || {};
 
-    // 只有当未达到限制时才增加计数
+    // 4. 扫描计数逻辑
     if (total < limit) {
       total += 1;
-      // 记录该设备的扫描
       deviceCounts[deviceId] = (deviceCounts[deviceId] || 0) + 1;
 
-      // 更新数据对象
       codeData.totalCount = total;
       codeData.deviceCounts = deviceCounts;
       codeData.lastScanAt = new Date().toISOString();
 
-      // 4. 将更新后的数据写回 KV 数据库 (替代 save_db)
       await env.CODES_KV.put(codeId, JSON.stringify(codeData));
     }
 
-    // 5. 确定状态
+    // 5. 返回状态
     let status = "valid";
-    if (total >= limit) {
-      status = "invalid"; // 或者前端逻辑里的 'limit'
-    } else if (total === 1) {
-      status = "first";
-    } else if (total === 2) {
-      status = "second";
-    }
+    if (total >= limit) status = "invalid";
+    else if (total === 1) status = "first";
+    else if (total === 2) status = "second";
 
-    // 6. 返回结果给前端
     return new Response(
       JSON.stringify({
         ok: true,
-        status: status,
+        status,
         totalCount: total,
         scanLimit: limit,
         config: codeData.config || {},
@@ -67,8 +78,12 @@ export async function onRequestPost(context) {
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ ok: false, error: err.message }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: err.message || "INTERNAL_ERROR",
+      }),
+      { status: 500 }
+    );
   }
 }
