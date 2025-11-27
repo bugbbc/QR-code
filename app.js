@@ -389,24 +389,68 @@
   }
 
   function renderContent(cfg) {
-    // 强制使用正确的标题，不读取配置里的（可能有错的）内容
+    // 1. 保持顶部标题不变
     setText("product-name", "Improved composition with finest ingredients.");
     setText("hero-art", "Premium • Elegant • Reliable");
-    setText("product-specs", cfg.specs);
-    setText("product-features", cfg.features);
-    setText("product-usage", cfg.usage);
-    setText("product-contact", cfg.contact);
 
+    // 2. 智能渲染规格 (Specs) - 让它变成漂亮的列表，而不是一段死板的文字
+    const specsEl = document.getElementById("product-specs");
+    if (specsEl && cfg.specs) {
+      // 把文本按行分割，过滤掉空行
+      const lines = cfg.specs.split("\n").filter((line) => line.trim());
+      // 生成带图标样式的 HTML
+      specsEl.innerHTML = lines
+        .map((line) => {
+          // 去掉原本可能存在的 "- " 符号，让样式更统一
+          const cleanLine = line.replace(/^-\s*/, "").replace(/^[•]\s*/, "");
+          return `
+          <div class="spec-item" style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+            <div style="min-width: 6px; height: 6px; border-radius: 50%; background: #c7a878; margin-top: 9px; margin-right: 10px;"></div>
+            <span style="color: #555;">${cleanLine}</span>
+          </div>
+        `;
+        })
+        .join("");
+    }
+
+    // 3. 智能渲染功能 (Features) - 同样处理换行
+    const featuresEl = document.getElementById("product-features");
+    if (featuresEl && cfg.features) {
+      // 将换行符转换为 HTML 的换行，增加段落间距
+      featuresEl.innerHTML = cfg.features.replace(/\n/g, "<br/>");
+    }
+
+    // 4. 其他部分保持原样
+    setText("product-usage", cfg.usage);
+
+    // 如果想要联系方式也好看点，可以把换行转为 <br>
+    const contactEl = document.getElementById("product-contact");
+    if (contactEl && cfg.contact) {
+      contactEl.innerHTML = (cfg.contact || "").replace(/\n/g, "<br/>");
+    }
+
+    // 底部联系方式同理
+    const contactBottomEl = document.getElementById("product-contact-bottom");
+    if (contactBottomEl) {
+      contactBottomEl.innerHTML = (cfg.contact || "").replace(/\n/g, "<br/>");
+    }
+
+    // 5. 购买链接渲染 (保持不变)
     const linksWrap = document.querySelector("#purchase-links .links");
-    linksWrap.innerHTML = "";
-    cfg.purchaseLinks.forEach((l) => {
-      const a = document.createElement("a");
-      a.href = l.url;
-      a.textContent = l.text;
-      a.target = "_blank";
-      a.rel = "noopener";
-      linksWrap.appendChild(a);
-    });
+    if (linksWrap && cfg.purchaseLinks) {
+      linksWrap.innerHTML = "";
+      cfg.purchaseLinks.forEach((l) => {
+        const a = document.createElement("a");
+        a.href = l.url;
+        a.textContent = l.text;
+        a.target = "_blank";
+        a.rel = "noopener";
+        // 确保样式类名匹配新 CSS
+        a.className = "btn primary";
+        a.style.margin = "0 8px 8px 0"; // 增加一点间距
+        linksWrap.appendChild(a);
+      });
+    }
   }
 
   function showFirstScan() {
