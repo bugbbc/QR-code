@@ -1,12 +1,13 @@
-/* style.css - La Mer Luxury Style (Responsive) */
+/* style.css - La Mer Luxury Style (With Gold & Footer) */
 :root {
-  --primary-color: #000000; /* 极致的黑 */
-  --accent-gold: #c7a878; /* 奢华金色点缀 */
+  --primary-color: #000000;
+  --accent-gold: #c7a878; /* 亮金色（文字点缀） */
+  --bg-gold: #f3efe9; /* 新增：柔和的高级香槟金背景 */
   --bg-color: #ffffff;
-  --bg-alt: #f9f9f9; /* 极淡的灰，用于区分区块 */
+  --bg-alt: #f9f9f9;
   --text-main: #222222;
   --text-sub: #666666;
-  --font-serif: "Playfair Display", Times, serif; /* 灵魂字体 */
+  --font-serif: "Playfair Display", Times, serif;
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -26,7 +27,7 @@ body {
   background: var(--bg-color);
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden; /* 防止手机横向晃动 */
+  overflow-x: hidden;
 }
 
 /* --- 极简导航栏 --- */
@@ -34,7 +35,7 @@ body {
   position: sticky;
   top: 0;
   background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid #f0f0f0;
   z-index: 100;
   padding: 16px 0;
@@ -44,7 +45,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 20px; /* 手机字号 */
+  font-size: 20px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--primary-color);
@@ -55,7 +56,7 @@ body {
   padding: 40px 20px;
   text-align: center;
   font-family: var(--font-serif);
-  font-size: 24px; /* 手机字号 */
+  font-size: 24px;
   font-style: italic;
   color: var(--text-main);
   background: var(--bg-color);
@@ -69,30 +70,43 @@ body {
   overflow-x: hidden;
 }
 
-/* --- 核心布局：手机优先 (Mobile First) --- */
-/* 默认情况下（手机），采用垂直堆叠 */
+/* --- 模块化布局 --- */
 .module-section {
   display: flex;
-  flex-direction: column; /* 手机：上图下文 */
+  flex-direction: column; /* 手机默认 */
   width: 100%;
-  min-height: auto; /* 高度由内容撑开 */
+  min-height: auto;
   background: var(--bg-color);
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* 媒体区域 (放轮播图) - 手机版 */
+/* ✨ 新增：高级金色背景样式类 ✨ */
+.module-section.bg-luxury-gold {
+  background-color: var(--bg-gold);
+  border-bottom: none;
+}
+/* 当模块有金色背景时，让里面的文本区域背景透明 */
+.bg-luxury-gold .module-text {
+  background: transparent;
+}
+/* 金色背景下的副标题颜色微调 */
+.bg-luxury-gold .module-text h3 {
+  color: #8a7a60; /* 深一点的金色 */
+}
+
+/* 媒体区域 */
 .module-media {
   width: 100%;
   position: relative;
   background: #f4f4f4;
   overflow: hidden;
-  height: 400px; /* 手机上给固定高度，保证图片够大 */
+  height: 400px;
 }
 
-/* 文本区域 - 手机版 */
+/* 文本区域 */
 .module-text {
   width: 100%;
-  padding: 50px 24px; /* 手机上的内边距 */
+  padding: 50px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -100,7 +114,7 @@ body {
   text-align: center;
 }
 
-/* --- 电脑大屏适配 (你想要的样式) --- */
+/* --- 电脑端适配 --- */
 @media (min-width: 900px) {
   .header h1 {
     font-size: 24px;
@@ -109,31 +123,26 @@ body {
     font-size: 28px;
   }
 
-  /* 切换为左右布局 */
   .module-section {
     flex-direction: row;
-    height: 600px; /* 电脑固定高度，排版更整齐 */
+    height: 600px;
   }
-
-  /* 反向布局（文左图右）只在电脑生效 */
   .module-section.reverse {
     flex-direction: row-reverse;
   }
 
-  /* 恢复 50% 宽度 */
   .module-media,
   .module-text {
     width: 50%;
     height: 100%;
   }
 
-  /* 电脑内边距 */
   .module-text {
     padding: 60px 40px;
   }
 }
 
-/* --- 文本样式 --- */
+/* 文本样式 */
 .module-text h3 {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -154,11 +163,11 @@ body {
 .text-block {
   font-size: 16px;
   color: var(--text-sub);
-  max-width: 420px; /* 限制每行字数，阅读更优雅 */
+  max-width: 420px;
   margin-bottom: 32px;
 }
 
-/* --- 轮播图 (修复版) --- */
+/* 轮播图 */
 .carousel {
   width: 100%;
   height: 100%;
@@ -179,11 +188,9 @@ body {
 .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 关键：填满区域 */
+  object-fit: cover;
   display: block;
 }
-
-/* 轮播按钮 */
 .carousel-btn {
   position: absolute;
   top: 50%;
@@ -207,7 +214,6 @@ body {
 .carousel-btn:last-of-type {
   right: 0;
 }
-
 .carousel-dots {
   position: absolute;
   bottom: 20px;
@@ -228,7 +234,7 @@ body {
   transform: scale(1.2);
 }
 
-/* --- 按钮 (黑底白字) --- */
+/* 按钮 */
 .btn.primary {
   display: inline-block;
   padding: 16px 40px;
@@ -247,7 +253,7 @@ body {
   color: var(--primary-color);
 }
 
-/* --- Scan Tracker 仪表盘 --- */
+/* 仪表盘 */
 .scan-counter-wrapper {
   padding: 60px 20px;
   background: var(--bg-alt);
@@ -271,7 +277,7 @@ body {
   text-transform: uppercase;
 }
 
-/* --- 规格列表 (Specifications) --- */
+/* 规格列表 */
 .specs-container {
   margin-top: 30px;
   width: 100%;
@@ -284,7 +290,7 @@ body {
   text-align: left;
 }
 .specs-list li {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 14px 0;
   display: flex;
   justify-content: space-between;
@@ -298,93 +304,166 @@ body {
   color: var(--text-sub);
 }
 
-/* --- Footer --- */
+/* --- ✨ 全新页脚 (La Mer Style Footer) ✨ --- */
 .footer {
-  background: #111;
-  color: #fff;
-  padding: 60px 20px;
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: 1px;
-}
-.footer a {
-  color: #fff;
-  text-decoration: none;
-  border-bottom: 1px solid #555;
+  background: #ffffff;
+  color: #222;
+  padding: 60px 20px 40px;
+  border-top: 1px solid #eee;
 }
 
-/* Utils */
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+@media (min-width: 900px) {
+  .footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+/* 左侧订阅栏 */
+.footer-subscribe {
+  flex: 1;
+  max-width: 400px;
+}
+.footer-title {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  margin: 0 0 20px;
+  color: #222;
+  font-weight: 400;
+}
+.subscribe-form label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #999;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hidden-checkbox:checked + .checkbox-custom::after {
+  content: "✓";
+  font-size: 12px;
+}
+.hidden-checkbox {
+  display: none;
+}
+.email-input-group {
+  position: relative;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+.email-input {
+  width: 100%;
+  border: none;
+  font-size: 16px;
+  padding: 10px 0;
+  outline: none;
+  color: #222;
+  background: transparent;
+  font-family: var(--font-sans);
+}
+.email-input::placeholder {
+  color: #999;
+}
+
+/* 右侧链接栏 */
+.footer-links-grid {
+  flex: 1.2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3列布局 */
+  gap: 20px;
+}
+.footer-col h4 {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+  color: #222;
+  font-weight: 600;
+}
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-col li {
+  margin-bottom: 12px;
+}
+.footer-col a {
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+.footer-col a:hover {
+  color: #000;
+}
+
+/* 手机端页脚优化 */
+@media (max-width: 768px) {
+  .footer-links-grid {
+    grid-template-columns: 1fr; /* 手机上单列 */
+    gap: 30px;
+  }
+  .footer-title {
+    font-size: 28px;
+  }
+}
+
+/* Loading & Utils */
 #loading-overlay {
   position: fixed;
   inset: 0;
   background: #fff;
-  z-index: 999;
+  z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 20px;
 }
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #eee;
+  width: 50px;
+  height: 50px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
   border-top-color: #000;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.hidden {
-  display: none !important;
-}
-.invalid {
-  color: #d32f2f;
-}
-/* style.css - 更新 Loading 样式 */
-
-#loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: #ffffff; /* 纯白背景 */
-  z-index: 9999;
-  display: flex;
-  flex-direction: column; /* 关键：让图标和文字垂直排列 */
-  align-items: center;
-  justify-content: center;
-  gap: 20px; /* 图标和文字之间的距离 */
-}
-
-/* 旋转的圈圈 */
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 2px solid rgba(0, 0, 0, 0.1); /* 浅灰色底环 */
-  border-top-color: #000000; /* 纯黑色的转动部分 */
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* 新增：加载文字样式 */
 .loading-text {
-  font-family: var(--font-sans); /* 使用无衬线字体，显得现代 */
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 3px; /* 宽字间距，奢侈品标配 */
-  text-transform: uppercase; /* 全大写 */
+  letter-spacing: 3px;
+  text-transform: uppercase;
   color: #333;
-  animation: pulse 1.5s ease-in-out infinite; /* 呼吸灯动画 */
+  animation: pulse 1.5s ease-in-out infinite;
 }
-
-/* 旋转动画 */
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
-
-/* 文字呼吸动画 */
 @keyframes pulse {
   0%,
   100% {
@@ -394,7 +473,9 @@ body {
     opacity: 0.5;
   }
 }
-
 .hidden {
   display: none !important;
+}
+.invalid {
+  color: #d32f2f;
 }

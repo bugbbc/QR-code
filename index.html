@@ -24,7 +24,7 @@
 
     <div class="scan-counter-wrapper" id="scan-counter">
       <div class="counter-header">
-        STATUS:
+        SECURITY STATUS:
         <span id="counter-remaining" class="counter-remaining"
           >Verifying...</span
         >
@@ -45,7 +45,7 @@
         </div>
       </section>
 
-      <section class="module-section reverse">
+      <section class="module-section reverse bg-luxury-gold">
         <div class="module-media">
           <div id="carousel-bottom" class="carousel"></div>
         </div>
@@ -63,7 +63,7 @@
 
       <section
         class="module-section"
-        style="min-height: auto; padding: 60px 20px; background: #fff"
+        style="min-height: auto; padding: 80px 20px; background: #fff"
       >
         <div class="module-text" style="width: 100%; padding: 0">
           <h3>CLIENT CARE</h3>
@@ -145,33 +145,101 @@
         </h2>
         <p style="color: #666">This product code is no longer active.</p>
       </section>
+
+      <section
+        id="limit-view"
+        class="hidden"
+        style="text-align: center; padding: 100px 20px"
+      >
+        <h1 style="font-family: var(--font-serif); font-size: 48px">
+          Limit Reached
+        </h1>
+        <p style="max-width: 500px; margin: 20px auto; color: #666">
+          For security purposes, this code has been permanently disabled.
+        </p>
+        <div id="limit-code" class="hidden">
+          <span id="limit-code-value"></span>
+        </div>
+        <br />
+        <a id="limit-support" href="#" style="color: #000; font-weight: bold"
+          >Contact Support</a
+        >
+      </section>
     </main>
 
-    <section
-      id="limit-view"
-      class="hidden"
-      style="text-align: center; padding: 100px 20px"
-    >
-      <h1 style="font-family: var(--font-serif); font-size: 48px">
-        Limit Reached
-      </h1>
-      <p style="max-width: 500px; margin: 20px auto; color: #666">
-        For security purposes, this code has been permanently disabled.
-      </p>
-      <div id="limit-code" class="hidden">
-        <span id="limit-code-value"></span>
-      </div>
-      <br />
-      <a id="limit-support" href="#" style="color: #000; font-weight: bold"
-        >Contact Support</a
-      >
-    </section>
-
     <footer class="footer">
-      <small
-        >&copy; 2023 MIRACLE WHITE. ALL RIGHTS RESERVED. <br />
-        <a id="admin-link" href="./admin.html">ADMIN</a></small
+      <div class="footer-inner">
+        <div class="footer-subscribe">
+          <h2 class="footer-title">BE FIRST</h2>
+          <form
+            class="subscribe-form"
+            onsubmit="event.preventDefault(); alert('Subscribed!');"
+          >
+            <label>
+              <input type="checkbox" class="hidden-checkbox" />
+              <span class="checkbox-custom"></span>
+              <span>
+                Sign me up to hear from Miracle White! To learn more, view our
+                <a href="#" style="text-decoration: underline; color: #555"
+                  >Privacy Policy</a
+                >.
+              </span>
+            </label>
+            <div class="email-input-group">
+              <input
+                type="email"
+                class="email-input"
+                placeholder="Email"
+                required
+              />
+            </div>
+          </form>
+        </div>
+
+        <div class="footer-links-grid">
+          <div class="footer-col">
+            <h4>DISCOVER</h4>
+            <ul>
+              <li><a href="#">Our Story</a></li>
+              <li><a href="#">Our Craft</a></li>
+              <li><a href="#">Miracle Broth™</a></li>
+              <li><a href="#">Blue Heart</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>NEED HELP?</h4>
+            <ul>
+              <li><a href="#">Track My Order</a></li>
+              <li><a href="#">Start a Return</a></li>
+              <li><a href="#">Returns</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>FOLLOW</h4>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">Pinterest</a></li>
+              <li><a href="#">TikTok</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          margin-top: 60px;
+          text-align: center;
+          font-size: 10px;
+          color: #ccc;
+        "
       >
+        &copy; 2023 MIRACLE WHITE. |
+        <a href="./admin.html" style="color: #ccc; text-decoration: none"
+          >ADMIN</a
+        >
+      </div>
     </footer>
 
     <script>
