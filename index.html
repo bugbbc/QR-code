@@ -2,15 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
-    />
-    <title>Miracle White - Authentic Verification</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Miracle White | The Verification</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css?v={{ts}}" />
@@ -21,256 +16,163 @@
     </div>
 
     <header class="header">
-      <h1 id="product-name">Miracle White Advanced Serum</h1>
+      <h1 id="product-name">MIRACLE WHITE</h1>
     </header>
-    <div id="hero-art" class="hero-art">Scientific • Pure • Effective</div>
+
+    <div class="hero-art" id="hero-art">The Essence of Radiance</div>
+
+    <div class="scan-counter-wrapper" id="scan-counter">
+      <div class="counter-header">
+        SECURITY STATUS:
+        <span id="counter-remaining" class="counter-remaining"
+          >Verifying...</span
+        >
+      </div>
+      <p id="counter-detail">AUTHENTICATING PRODUCT ID...</p>
+    </div>
 
     <main id="product-main" class="content">
-      <section id="scan-counter" class="card scan-counter">
-        <div class="counter-header">
-          <span class="counter-label">Security Check Status</span>
-          <span id="counter-remaining" class="counter-remaining"
-            >Verifying...</span
-          >
-        </div>
-        <p id="counter-detail">
-          Please wait while we verify product authenticity.
-        </p>
-      </section>
-
-      <section class="card">
-        <h3>Product Highlights</h3>
-        <div class="feature-layout">
-          <div id="product-features" class="text-block"></div>
+      <section class="module-section">
+        <div class="module-media">
           <div id="carousel-top" class="carousel"></div>
         </div>
-      </section>
-
-      <section class="card">
-        <h3>Star Ingredients</h3>
-        <p style="text-align: center; color: #666; margin-bottom: 24px">
-          Powered by nature's most potent botanicals.
-        </p>
-        <div class="ingredients-grid">
-          <div class="ingredient-item">
-            <div class="ing-circle">Vit C</div>
-            <div class="ing-name">Vitamin C</div>
-            <div class="ing-desc">Brightening</div>
-          </div>
-          <div class="ingredient-item">
-            <div class="ing-circle">Ha</div>
-            <div class="ing-name">Hyaluronic Acid</div>
-            <div class="ing-desc">Hydration</div>
-          </div>
-          <div class="ingredient-item">
-            <div class="ing-circle">Ni</div>
-            <div class="ing-name">Niacinamide</div>
-            <div class="ing-desc">Pore Care</div>
-          </div>
-          <div class="ingredient-item">
-            <div class="ing-circle">Pe</div>
-            <div class="ing-name">Peptides</div>
-            <div class="ing-desc">Anti-aging</div>
-          </div>
+        <div class="module-text">
+          <h3>THE FORMULA</h3>
+          <h2>Miracle Broth™</h2>
+          <div id="product-features" class="text-block"></div>
+          <a href="#purchase-links" class="btn primary">Discover More</a>
         </div>
       </section>
 
-      <div class="grid-2-cols">
-        <section class="card">
-          <h3>Specifications</h3>
-          <div id="product-specs" class="text-block specs-list"></div>
-        </section>
-
-        <section class="card">
-          <h3>Usage Ritual</h3>
-          <div id="product-usage" class="text-block"></div>
-        </section>
-      </div>
-
-      <section class="card">
-        <h3>Application Guide</h3>
-        <div class="feature-layout reverse">
-          <div class="text-block">
-            <p>
-              <strong>Step 1: Cleanse</strong><br />Start with a gentle cleanser
-              to remove impurities.
-            </p>
-            <p>
-              <strong>Step 2: Apply</strong><br />Apply 2-3 pumps of serum to
-              face and neck.
-            </p>
-            <p>
-              <strong>Step 3: Massage</strong><br />Gently massage in upward
-              circular motions.
-            </p>
-            <br />
-            <small><i>* For best results, use morning and night.</i></small>
-          </div>
+      <section class="module-section reverse">
+        <div class="module-media">
           <div id="carousel-bottom" class="carousel"></div>
         </div>
-      </section>
-
-      <section class="card" style="background: #fdfdfd">
-        <h3>Real Results</h3>
-        <div class="reviews-grid">
-          <div class="review-card">
-            <div class="review-stars">★★★★★</div>
-            <div class="review-text">
-              "I saw visible results in just 5 days. My skin feels so much
-              smoother!"
-            </div>
-            <div class="review-author">— Sarah M.</div>
-          </div>
-          <div class="review-card">
-            <div class="review-stars">★★★★★</div>
-            <div class="review-text">
-              "The texture is amazing, absorbs instantly without being sticky."
-            </div>
-            <div class="review-author">— Jessica K.</div>
-          </div>
-          <div class="review-card">
-            <div class="review-stars">★★★★★</div>
-            <div class="review-text">
-              "Finally a product that works for my sensitive skin."
-            </div>
-            <div class="review-author">— Emily R.</div>
+        <div class="module-text">
+          <h3>THE RITUAL</h3>
+          <h2>Application</h2>
+          <div id="product-usage" class="text-block"></div>
+          <div class="specs-container">
+            <h3>Specifications</h3>
+            <div
+              id="product-specs"
+              class="text-block"
+              style="font-size: 14px; margin-top: 20px"
+            ></div>
           </div>
         </div>
       </section>
 
-      <section class="card">
-        <h3>Common Questions</h3>
-        <div class="faq-item">
-          <div class="faq-question">
-            Is this product safe for sensitive skin?
-          </div>
-          <div class="faq-answer">
-            Yes, our formula is dermatologically tested and free from harsh
-            parabens.
-          </div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-question">How long until I see results?</div>
-          <div class="faq-answer">
-            Most users report visible improvement in skin texture within 7 days.
-          </div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-question">Can I use this under makeup?</div>
-          <div class="faq-answer">
-            Absolutely. The lightweight formula acts as a perfect primer.
-          </div>
+      <section
+        class="module-section"
+        style="min-height: auto; padding: 80px 20px; background: #fff"
+      >
+        <div class="module-text" style="width: 100%; padding: 0">
+          <h3>CLIENT CARE</h3>
+          <h2>We are here to assist</h2>
+          <div id="product-contact" class="text-block"></div>
         </div>
       </section>
 
       <section
         id="purchase-links"
-        class="card hidden"
-        style="text-align: center; border: 2px solid var(--primary-color)"
+        class="hidden"
+        style="text-align: center; padding: 60px 20px; background: #f9f9f9"
       >
-        <h3>Exclusive Offer</h3>
-        <p style="margin-bottom: 20px">
-          Verification Successful. You are eligible for a member discount.
-        </p>
-        <div class="links" style="justify-content: center"></div>
+        <h2 style="font-family: var(--font-serif); margin-bottom: 30px">
+          Exclusive Offers
+        </h2>
+        <div class="links"></div>
       </section>
 
       <div id="coupon-modal" class="modal hidden">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Welcome Back</h3>
-            <button id="close-coupon" class="icon-btn">✕</button>
-          </div>
-          <div style="padding: 24px; text-align: center">
-            <p style="color: #666; margin-bottom: 20px">
-              Thank you for your loyalty.
-            </p>
-            <div
-              id="coupon-text"
-              class="text-block"
-              style="font-weight: bold; font-size: 18px; color: #222"
-            ></div>
-          </div>
-          <div class="modal-actions" style="justify-content: center">
-            <a id="coupon-link" class="btn primary" href="#" target="_blank"
-              >Redeem Now</a
-            >
-          </div>
+        <div
+          style="
+            background: #fff;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          "
+        >
+          <h3
+            style="
+              font-family: var(--font-serif);
+              font-size: 24px;
+              margin-top: 0;
+            "
+          >
+            Welcome Back
+          </h3>
+          <div id="coupon-text" style="margin: 20px 0; color: #666"></div>
+          <button
+            id="close-coupon"
+            style="
+              background: none;
+              border: none;
+              border-bottom: 1px solid #000;
+              cursor: pointer;
+            "
+          >
+            Close
+          </button>
+          <br /><br />
+          <a id="coupon-link" class="btn primary" href="#" target="_blank"
+            >Redeem</a
+          >
         </div>
       </div>
 
-      <section id="scan-hint" class="card hidden scan-hint">
-        <h3 style="font-size: 16px">System Message</h3>
-        <p id="scan-hint-text">...</p>
+      <section
+        id="scan-hint"
+        class="hidden"
+        style="text-align: center; padding: 20px; background: #000; color: #fff"
+      >
+        <p id="scan-hint-text">System Message</p>
       </section>
 
       <section
         id="invalid-section"
-        class="card hidden"
-        style="
-          background: #fff0f0;
-          border: 1px solid #ffcdcd;
-          text-align: center;
-        "
+        class="hidden"
+        style="text-align: center; padding: 100px 20px"
       >
-        <h3 style="color: #c00">Verification Failed</h3>
-        <p>This code has been scanned too many times or is invalid.</p>
-      </section>
-
-      <section class="card">
-        <h3>Customer Care</h3>
-        <div id="product-contact" class="text-block"></div>
+        <h2
+          style="
+            color: #d32f2f;
+            font-family: var(--font-serif);
+            font-size: 36px;
+          "
+        >
+          Code Invalid
+        </h2>
+        <p style="color: #666">This product code is no longer active.</p>
       </section>
     </main>
 
     <section
       id="limit-view"
-      class="limit-card hidden"
-      style="
-        max-width: 600px;
-        margin: 40px auto;
-        text-align: center;
-        padding: 40px;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      "
+      class="hidden"
+      style="text-align: center; padding: 100px 20px"
     >
-      <div style="font-size: 48px; color: #d32f2f; margin-bottom: 20px">⚠️</div>
-      <h2 style="font-family: 'Playfair Display', serif">
-        Maximum Scans Reached
-      </h2>
-      <p style="color: #666; margin-bottom: 30px">
-        For your protection, this code has been permanently disabled.
+      <h1 style="font-family: var(--font-serif); font-size: 48px">
+        Limit Reached
+      </h1>
+      <p style="max-width: 500px; margin: 20px auto; color: #666">
+        For security purposes, this code has been permanently disabled.
       </p>
-      <div
-        id="limit-code"
-        class="hidden"
-        style="
-          background: #f5f5f5;
-          padding: 10px;
-          border-radius: 8px;
-          font-family: monospace;
-          display: inline-block;
-        "
+      <div id="limit-code" class="hidden">
+        <span id="limit-code-value"></span>
+      </div>
+      <br />
+      <a id="limit-support" href="#" style="color: #000; font-weight: bold"
+        >Contact Support</a
       >
-        Code: <span id="limit-code-value"></span>
-      </div>
-      <div style="margin-top: 30px">
-        <a id="limit-support" class="btn primary" href="#">Contact Support</a>
-      </div>
     </section>
 
-    <footer
-      class="footer"
-      style="text-align: center; padding: 40px; color: #999; font-size: 12px"
-    >
-      <p>&copy; 2023 Miracle White. Pure Beauty, Pure Science.</p>
-      <a
-        id="admin-link"
-        href="./admin.html"
-        style="color: #ccc; text-decoration: none"
-        >Admin Access</a
+    <footer class="footer">
+      <small
+        >&copy; 2023 MIRACLE WHITE. ALL RIGHTS RESERVED. <br />
+        <a id="admin-link" href="./admin.html">ADMIN</a></small
       >
     </footer>
 
