@@ -1,12 +1,12 @@
-/* style.css - La Mer Luxury Style */
+/* style.css - 完美响应式 La Mer 风格 */
 :root {
-  --primary-color: #000000; /* La Mer 风格通常使用极致的黑 */
-  --accent-gold: #c7a878; /* 即使是黑白风，也可以保留一点金色作为点缀 */
+  --primary-color: #000000;
+  --accent-gold: #c7a878;
   --bg-color: #ffffff;
-  --bg-alt: #f8f8f8; /* 极淡的灰色背景用于区分板块 */
+  --bg-alt: #f9f9f9;
   --text-main: #222222;
   --text-sub: #666666;
-  --font-serif: "Playfair Display", Times, serif; /* 核心：衬线字体 */
+  --font-serif: "Playfair Display", Times, serif;
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -24,134 +24,163 @@ body {
   font-family: var(--font-sans);
   color: var(--text-main);
   background: var(--bg-color);
-  line-height: 1.8;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* 防止手机横向溢出 */
+  overflow-x: hidden;
+  width: 100%;
 }
 
-/* --- 极简导航栏 --- */
+/* --- 导航栏 --- */
 .header {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(5px);
-  border-bottom: 1px solid #eee;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #f0f0f0;
   z-index: 100;
-  padding: 20px 0;
+  padding: 16px 0;
   text-align: center;
 }
 .header h1 {
   margin: 0;
-  font-family: var(--font-sans); /* 大牌通常Logo是无衬线或特定设计 */
+  font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 24px;
-  letter-spacing: 2px;
+  font-size: 20px; /* 手机上稍微调小一点 */
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--primary-color);
 }
 
-/* --- Hero Slogan --- */
+/* --- Slogan --- */
 .hero-art {
-  padding: 40px 20px;
+  padding: 30px 20px;
   text-align: center;
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: 22px; /* 手机适配字号 */
   font-style: italic;
   color: var(--text-main);
   background: var(--bg-color);
-  max-width: 800px;
   margin: 0 auto;
 }
 
 .content {
-  /* 去掉左右padding，让模块可以全宽显示 */
   max-width: 100%;
   padding: 0;
   overflow-x: hidden;
 }
 
-/* --- 核心：50/50 模块化布局 --- */
+/* --- 核心：响应式模块化布局 --- */
+
+/* 默认（手机优先）：垂直堆叠 */
 .module-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* 手机上：上图下文 */
   width: 100%;
-  min-height: 500px;
+  min-height: auto; /* 手机上高度自动，被内容撑开 */
   background: var(--bg-color);
   border-bottom: 1px solid #f0f0f0;
 }
 
-@media (min-width: 900px) {
-  .module-section {
-    flex-direction: row; /* 电脑上左右并排 */
-    height: 600px; /* 固定高度让排版更整齐 */
-  }
-  .module-section.reverse {
-    flex-direction: row-reverse; /* 反向排列：文-图 */
-  }
-
-  /* 左/右 半边 */
-  .module-media,
-  .module-text {
-    width: 50%;
-    height: 100%;
-  }
-}
-
-/* 媒体区域 (放轮播图) */
+/* 媒体区域 (放轮播图) - 手机版 */
 .module-media {
+  width: 100%;
   position: relative;
   background: #f4f4f4;
   overflow: hidden;
+  /* 手机核心修改：给定一个固定高度或比例，否则图片会消失 */
+  height: 400px;
 }
 
-/* 文本区域 */
+/* 文本区域 - 手机版 */
 .module-text {
-  padding: 60px 40px;
+  width: 100%;
+  padding: 40px 24px; /* 手机上边距小一点 */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* 居中对齐 */
+  align-items: center;
   text-align: center;
+  min-height: auto;
 }
 
 /* 文本样式 */
 .module-text h3 {
   font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 2px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-sub);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .module-text h2 {
   font-family: var(--font-serif);
-  font-size: 36px;
+  font-size: 32px; /* 手机上标题够大才好看 */
   font-weight: 400;
-  margin: 0 0 24px;
+  margin: 0 0 20px;
   color: var(--primary-color);
+  line-height: 1.2;
 }
 .text-block {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text-sub);
-  max-width: 400px; /* 限制文字宽度，阅读更舒服 */
-  margin-bottom: 32px;
+  max-width: 100%; /* 手机上占满宽度 */
+  margin-bottom: 24px;
+  line-height: 1.8;
 }
 
-/* --- 修复版轮播图样式 --- */
+/* --- 💻 电脑端适配 (Media Query) --- */
+@media (min-width: 900px) {
+  .header h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+  .hero-art {
+    padding: 50px 20px;
+    font-size: 28px;
+  }
+
+  .module-section {
+    flex-direction: row; /* 电脑上：左右并排 */
+    height: 600px; /* 固定高度 */
+  }
+
+  /* 反向布局（右图左文）仅在电脑生效 */
+  .module-section.reverse {
+    flex-direction: row-reverse;
+  }
+
+  /* 恢复 50% 宽度 */
+  .module-media,
+  .module-text {
+    width: 50%;
+    height: 100%;
+  }
+
+  .module-text {
+    padding: 0 60px; /* 电脑上增加呼吸感 */
+  }
+
+  .text-block {
+    max-width: 400px; /* 限制文字宽度，阅读更舒适 */
+  }
+}
+
+/* --- 轮播图通用样式 --- */
 .carousel {
   width: 100%;
   height: 100%;
   position: relative;
 }
-/* 关键修复：确保 track 是横向排列的 */
 .carousel-track {
   display: flex;
   height: 100%;
   width: 100%;
-  transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1); /* 更优雅的滑动效果 */
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .carousel-item {
-  min-width: 100%; /* 强制每张图占满容器宽度 */
+  min-width: 100%;
   height: 100%;
   flex-shrink: 0;
   position: relative;
@@ -159,61 +188,55 @@ body {
 .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 关键：裁剪图片以填满区域 */
+  object-fit: cover; /* 关键：无论手机还是电脑，图片都填满区域 */
   display: block;
 }
 
-/* 轮播导航按钮 (极简线条风) */
+/* 轮播按钮 */
 .carousel-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  font-size: 30px;
+  font-size: 24px;
   color: #fff;
   cursor: pointer;
-  padding: 20px;
+  padding: 15px;
   z-index: 10;
-  opacity: 0.7;
-  transition: opacity 0.3s;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-.carousel-btn:hover {
-  opacity: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 .carousel-btn:first-of-type {
   left: 0;
-} /* Prev */
+}
 .carousel-btn:last-of-type {
   right: 0;
-} /* Next */
+}
 
-/* 轮播指示点 */
 .carousel-dots {
   position: absolute;
-  bottom: 20px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.5);
   transition: background 0.3s;
 }
 .dot.active {
   background: #fff;
+  transform: scale(1.2);
 }
 
-/* --- 按钮样式 (Solid Black) --- */
+/* --- 按钮样式 --- */
 .btn.primary {
   display: inline-block;
-  padding: 16px 40px;
+  padding: 14px 36px;
   background: var(--primary-color);
   color: #fff;
   font-size: 12px;
@@ -223,85 +246,96 @@ body {
   border: 1px solid var(--primary-color);
   transition: var(--transition);
   cursor: pointer;
+  margin-top: 10px;
 }
 .btn.primary:hover {
   background: transparent;
   color: var(--primary-color);
 }
 
-/* --- Scan Tracker 模块 (悬浮或独立) --- */
+/* --- Scan Tracker 仪表盘 (手机优化) --- */
 .scan-counter-wrapper {
-  padding: 60px 20px;
+  padding: 40px 20px;
   background: var(--bg-alt);
   text-align: center;
+  border-bottom: 1px solid #eee;
 }
 .counter-header {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 18px; /* 手机上稍微小一点 */
   color: var(--primary-color);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column; /* 手机上上下排列 */
+  gap: 5px;
+}
+@media (min-width: 600px) {
+  .counter-header {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
 }
 .counter-remaining {
   font-weight: 700;
-  border-bottom: 2px solid var(--accent-gold);
+  font-size: 24px; /* 数字加大 */
+  color: var(--accent-gold);
 }
 #counter-detail {
-  font-size: 14px;
-  color: var(--text-sub);
+  font-size: 12px;
+  color: #888;
   letter-spacing: 1px;
   text-transform: uppercase;
+  margin-top: 10px;
 }
 
-/* --- 列表化规格 (Specifications) --- */
-.specs-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: left;
+/* --- 规格列表 --- */
+.specs-container {
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
+  margin-top: 30px;
+  text-align: left;
+}
+.specs-container h3 {
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 15px;
 }
 .specs-list li {
-  border-bottom: 1px solid #ddd;
-  padding: 12px 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-}
-.specs-list span:first-child {
-  font-weight: 600;
-  color: var(--text-main);
-}
-.specs-list span:last-child {
-  color: var(--text-sub);
+  font-size: 13px;
 }
 
 /* --- Footer --- */
 .footer {
   background: #111;
-  color: #fff;
-  padding: 60px 20px;
+  color: #888;
+  padding: 40px 20px;
   text-align: center;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 .footer a {
   color: #fff;
   text-decoration: none;
-  border-bottom: 1px solid #555;
 }
 
-/* Loading & Utils */
+/* Utils */
 #loading-overlay {
   position: fixed;
   inset: 0;
   background: #fff;
-  z-index: 999;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border: 2px solid #eee;
   border-top-color: #000;
   border-radius: 50%;
@@ -314,7 +348,4 @@ body {
 }
 .hidden {
   display: none !important;
-}
-.invalid {
-  color: #d32f2f;
 }
