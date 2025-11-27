@@ -1,12 +1,12 @@
-/* style.css - 完美响应式 La Mer 风格 */
+/* style.css - La Mer Luxury Style (Responsive) */
 :root {
-  --primary-color: #000000;
-  --accent-gold: #c7a878;
+  --primary-color: #000000; /* 极致的黑 */
+  --accent-gold: #c7a878; /* 奢华金色点缀 */
   --bg-color: #ffffff;
-  --bg-alt: #f9f9f9;
+  --bg-alt: #f9f9f9; /* 极淡的灰，用于区分区块 */
   --text-main: #222222;
   --text-sub: #666666;
-  --font-serif: "Playfair Display", Times, serif;
+  --font-serif: "Playfair Display", Times, serif; /* 灵魂字体 */
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -24,19 +24,17 @@ body {
   font-family: var(--font-sans);
   color: var(--text-main);
   background: var(--bg-color);
-  line-height: 1.6;
+  line-height: 1.8;
   -webkit-font-smoothing: antialiased;
-  /* 防止手机横向溢出 */
-  overflow-x: hidden;
-  width: 100%;
+  overflow-x: hidden; /* 防止手机横向晃动 */
 }
 
-/* --- 导航栏 --- */
+/* --- 极简导航栏 --- */
 .header {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid #f0f0f0;
   z-index: 100;
   padding: 16px 0;
@@ -46,21 +44,22 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 20px; /* 手机上稍微调小一点 */
-  letter-spacing: 1.5px;
+  font-size: 20px; /* 手机字号 */
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--primary-color);
 }
 
-/* --- Slogan --- */
+/* --- Hero Slogan --- */
 .hero-art {
-  padding: 30px 20px;
+  padding: 40px 20px;
   text-align: center;
   font-family: var(--font-serif);
-  font-size: 22px; /* 手机适配字号 */
+  font-size: 24px; /* 手机字号 */
   font-style: italic;
   color: var(--text-main);
   background: var(--bg-color);
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -70,14 +69,13 @@ body {
   overflow-x: hidden;
 }
 
-/* --- 核心：响应式模块化布局 --- */
-
-/* 默认（手机优先）：垂直堆叠 */
+/* --- 核心布局：手机优先 (Mobile First) --- */
+/* 默认情况下（手机），采用垂直堆叠 */
 .module-section {
   display: flex;
-  flex-direction: column; /* 手机上：上图下文 */
+  flex-direction: column; /* 手机：上图下文 */
   width: 100%;
-  min-height: auto; /* 手机上高度自动，被内容撑开 */
+  min-height: auto; /* 高度由内容撑开 */
   background: var(--bg-color);
   border-bottom: 1px solid #f0f0f0;
 }
@@ -88,65 +86,36 @@ body {
   position: relative;
   background: #f4f4f4;
   overflow: hidden;
-  /* 手机核心修改：给定一个固定高度或比例，否则图片会消失 */
-  height: 400px;
+  height: 400px; /* 手机上给固定高度，保证图片够大 */
 }
 
 /* 文本区域 - 手机版 */
 .module-text {
   width: 100%;
-  padding: 40px 24px; /* 手机上边距小一点 */
+  padding: 50px 24px; /* 手机上的内边距 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: auto;
 }
 
-/* 文本样式 */
-.module-text h3 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-sub);
-  margin-bottom: 12px;
-}
-.module-text h2 {
-  font-family: var(--font-serif);
-  font-size: 32px; /* 手机上标题够大才好看 */
-  font-weight: 400;
-  margin: 0 0 20px;
-  color: var(--primary-color);
-  line-height: 1.2;
-}
-.text-block {
-  font-size: 15px;
-  color: var(--text-sub);
-  max-width: 100%; /* 手机上占满宽度 */
-  margin-bottom: 24px;
-  line-height: 1.8;
-}
-
-/* --- 💻 电脑端适配 (Media Query) --- */
+/* --- 电脑大屏适配 (你想要的样式) --- */
 @media (min-width: 900px) {
   .header h1 {
     font-size: 24px;
-    letter-spacing: 2px;
   }
   .hero-art {
-    padding: 50px 20px;
     font-size: 28px;
   }
 
+  /* 切换为左右布局 */
   .module-section {
-    flex-direction: row; /* 电脑上：左右并排 */
-    height: 600px; /* 固定高度 */
+    flex-direction: row;
+    height: 600px; /* 电脑固定高度，排版更整齐 */
   }
 
-  /* 反向布局（右图左文）仅在电脑生效 */
+  /* 反向布局（文左图右）只在电脑生效 */
   .module-section.reverse {
     flex-direction: row-reverse;
   }
@@ -158,16 +127,38 @@ body {
     height: 100%;
   }
 
+  /* 电脑内边距 */
   .module-text {
-    padding: 0 60px; /* 电脑上增加呼吸感 */
-  }
-
-  .text-block {
-    max-width: 400px; /* 限制文字宽度，阅读更舒适 */
+    padding: 60px 40px;
   }
 }
 
-/* --- 轮播图通用样式 --- */
+/* --- 文本样式 --- */
+.module-text h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+}
+.module-text h2 {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 400;
+  margin: 0 0 24px;
+  color: var(--primary-color);
+  line-height: 1.2;
+}
+.text-block {
+  font-size: 16px;
+  color: var(--text-sub);
+  max-width: 420px; /* 限制每行字数，阅读更优雅 */
+  margin-bottom: 32px;
+}
+
+/* --- 轮播图 (修复版) --- */
 .carousel {
   width: 100%;
   height: 100%;
@@ -177,7 +168,7 @@ body {
   display: flex;
   height: 100%;
   width: 100%;
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
 }
 .carousel-item {
   min-width: 100%;
@@ -188,7 +179,7 @@ body {
 .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 关键：无论手机还是电脑，图片都填满区域 */
+  object-fit: cover; /* 关键：填满区域 */
   display: block;
 }
 
@@ -199,12 +190,16 @@ body {
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 30px;
   color: #fff;
   cursor: pointer;
-  padding: 15px;
+  padding: 20px;
   z-index: 10;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  opacity: 0.8;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.carousel-btn:hover {
+  opacity: 1;
 }
 .carousel-btn:first-of-type {
   left: 0;
@@ -215,28 +210,28 @@ body {
 
 .carousel-dots {
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  transition: background 0.3s;
+  background: rgba(255, 255, 255, 0.4);
+  transition: 0.3s;
 }
 .dot.active {
   background: #fff;
   transform: scale(1.2);
 }
 
-/* --- 按钮样式 --- */
+/* --- 按钮 (黑底白字) --- */
 .btn.primary {
   display: inline-block;
-  padding: 14px 36px;
+  padding: 16px 40px;
   background: var(--primary-color);
   color: #fff;
   font-size: 12px;
@@ -246,74 +241,68 @@ body {
   border: 1px solid var(--primary-color);
   transition: var(--transition);
   cursor: pointer;
-  margin-top: 10px;
 }
 .btn.primary:hover {
   background: transparent;
   color: var(--primary-color);
 }
 
-/* --- Scan Tracker 仪表盘 (手机优化) --- */
+/* --- Scan Tracker 仪表盘 --- */
 .scan-counter-wrapper {
-  padding: 40px 20px;
+  padding: 60px 20px;
   background: var(--bg-alt);
   text-align: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e0e0e0;
 }
 .counter-header {
   font-family: var(--font-serif);
-  font-size: 18px; /* 手机上稍微小一点 */
+  font-size: 22px;
   color: var(--primary-color);
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column; /* 手机上上下排列 */
-  gap: 5px;
-}
-@media (min-width: 600px) {
-  .counter-header {
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
-  }
+  margin-bottom: 10px;
 }
 .counter-remaining {
   font-weight: 700;
-  font-size: 24px; /* 数字加大 */
-  color: var(--accent-gold);
+  border-bottom: 2px solid var(--accent-gold);
 }
 #counter-detail {
-  font-size: 12px;
-  color: #888;
-  letter-spacing: 1px;
+  font-size: 13px;
+  color: var(--text-sub);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-top: 10px;
 }
 
-/* --- 规格列表 --- */
+/* --- 规格列表 (Specifications) --- */
 .specs-container {
+  margin-top: 30px;
   width: 100%;
   max-width: 320px;
-  margin-top: 30px;
+}
+.specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   text-align: left;
 }
-.specs-container h3 {
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 15px;
-}
 .specs-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 14px 0;
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
+}
+.specs-list span:first-child {
+  font-weight: 600;
+  color: var(--text-main);
+}
+.specs-list span:last-child {
+  color: var(--text-sub);
 }
 
 /* --- Footer --- */
 .footer {
   background: #111;
-  color: #888;
-  padding: 40px 20px;
+  color: #fff;
+  padding: 60px 20px;
   text-align: center;
   font-size: 11px;
   letter-spacing: 1px;
@@ -321,6 +310,7 @@ body {
 .footer a {
   color: #fff;
   text-decoration: none;
+  border-bottom: 1px solid #555;
 }
 
 /* Utils */
@@ -328,14 +318,14 @@ body {
   position: fixed;
   inset: 0;
   background: #fff;
-  z-index: 9999;
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .spinner {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border: 2px solid #eee;
   border-top-color: #000;
   border-radius: 50%;
@@ -348,4 +338,7 @@ body {
 }
 .hidden {
   display: none !important;
+}
+.invalid {
+  color: #d32f2f;
 }
