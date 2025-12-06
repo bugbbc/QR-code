@@ -12,7 +12,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>后台管理</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="./style.css?v={{ts}}" />
     <style>
       .login {
@@ -75,129 +75,138 @@
     </style>
   </head>
   <body>
-    <header class="header"><h1>后台管理系统</h1></header>
+    <header class="header"><h1>Admin Management System</h1></header>
     <main class="content">
       <section id="login-section" class="card login">
-        <h3>管理员登录</h3>
+        <h3>Admin Login</h3>
         <div class="form-row">
-          <label>用户名</label><input id="username" placeholder="admin" />
+          <label>Username</label><input id="username" placeholder="admin" />
         </div>
         <div class="form-row">
-          <label>密码</label
+          <label>Password</label
           ><input id="password" type="password" placeholder="password123" />
         </div>
-        <button id="login-btn" class="btn primary">登录</button>
+        <button id="login-btn" class="btn primary">Login</button>
       </section>
 
       <section id="admin-section" class="hidden">
         <div class="grid">
           <div class="card">
-            <h3>商品内容管理</h3>
+            <h3>Product Content Management</h3>
             <div class="form-row">
-              <label>产品ID</label
+              <label>Product ID</label
               ><input id="productId" placeholder="default-product" />
             </div>
-            <div class="form-row"><label>名称</label><input id="name" /></div>
+            <div class="form-row"><label>Name</label><input id="name" /></div>
             <div class="form-row">
-              <label>规格参数</label><textarea id="specs" rows="4"></textarea>
+              <label>Specifications</label
+              ><textarea id="specs" rows="4"></textarea>
             </div>
             <div class="form-row">
-              <label>功能介绍</label
+              <label>Features</label
               ><textarea id="features" rows="6"></textarea>
             </div>
             <div class="form-row">
-              <label>使用说明</label><textarea id="usage" rows="4"></textarea>
+              <label>Usage Instructions</label
+              ><textarea id="usage" rows="4"></textarea>
             </div>
             <div class="form-row">
-              <label>联系方式</label><textarea id="contact" rows="3"></textarea>
+              <label>Contact Information</label
+              ><textarea id="contact" rows="3"></textarea>
             </div>
             <div class="form-row">
-              <label>购买链接1</label><input id="link1" />
+              <label>Purchase Link 1</label><input id="link1" />
             </div>
             <div class="form-row">
-              <label>购买链接2</label><input id="link2" />
+              <label>Purchase Link 2</label><input id="link2" />
             </div>
             <div class="form-row">
-              <label>优惠文案</label><input id="couponText" />
+              <label>Coupon Text</label><input id="couponText" />
             </div>
             <div class="form-row">
-              <label>优惠链接</label><input id="couponUrl" />
+              <label>Coupon URL</label><input id="couponUrl" />
             </div>
             <div class="form-row">
-              <label>扫码上限</label
+              <label>Scan Limit</label
               ><input id="scanLimit" type="number" min="1" value="3" />
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap">
-              <button id="save-btn" class="btn primary">保存并立即生效</button>
-              <button id="export-json" class="btn">导出配置 JSON</button>
+              <button id="save-btn" class="btn primary">Save and Apply</button>
+              <button id="export-json" class="btn">Export Config JSON</button>
             </div>
           </div>
 
           <div class="card">
-            <h3>数据统计</h3>
+            <h3>Statistics</h3>
             <p>
-              总扫描次数：<span id="totalScans">0</span>，设备数：<span
-                id="deviceCount"
-                >0</span
-              >
+              Total Scans: <span id="totalScans">0</span>, Devices:
+              <span id="deviceCount">0</span>
             </p>
             <table class="stats-table">
               <thead>
                 <tr>
-                  <th>类别</th>
-                  <th>次数</th>
+                  <th>Category</th>
+                  <th>Count</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>首次扫描</td>
+                  <td>First Scan</td>
                   <td id="firstCount">0</td>
                 </tr>
                 <tr>
-                  <td>第2-3次扫描</td>
+                  <td>2nd-3rd Scan</td>
                   <td id="secondCount">0</td>
                 </tr>
                 <tr>
-                  <td>失效（≥4）</td>
+                  <td>Invalid (≥4)</td>
                   <td id="invalidCount">0</td>
                 </tr>
               </tbody>
             </table>
-            <h4>设备类型</h4>
+            <h4>Device Type</h4>
             <ul>
-              <li>Android：<span id="androidCount">0</span></li>
-              <li>iOS：<span id="iosCount">0</span></li>
-              <li>其他：<span id="otherCount">0</span></li>
+              <li>Android: <span id="androidCount">0</span></li>
+              <li>iOS: <span id="iosCount">0</span></li>
+              <li>Other: <span id="otherCount">0</span></li>
             </ul>
-            <h4>地域（统计采样）</h4>
+            <h4>Regions (Sampling)</h4>
             <div id="regions" class="text-block"></div>
             <div style="margin-top: 8px; display: flex; gap: 8px">
-              <button id="refresh-stats" class="btn">刷新统计</button>
-              <button id="reset-stats" class="btn">清除统计与计数</button>
+              <button id="refresh-stats" class="btn">Refresh Statistics</button>
+              <button id="reset-stats" class="btn">
+                Clear Statistics & Counts
+              </button>
             </div>
           </div>
         </div>
 
         <section class="card" id="code-management">
-          <h3>一物一码 / 防伪二维码批量生成</h3>
+          <h3>
+            One Code Per Product / Anti-Counterfeit QR Code Batch Generation
+          </h3>
           <p style="color: #555">
-            每个二维码都会绑定唯一编码与扫码上限，扫码时需带上
-            <code>code</code> 参数（形如
-            <code>?id=xxx&amp;code=XXXX</code>），超过限制即判定为失效。
+            Each QR code is bound to a unique code and scan limit. When
+            scanning, the <code>code</code> parameter must be included (e.g.,
+            <code>?id=xxx&amp;code=XXXX</code>). Exceeding the limit will be
+            considered invalid.
           </p>
           <div class="form-row">
-            <label>API 服务地址</label>
+            <label>API Service Address</label>
             <input
               id="apiBase"
-              placeholder="例如：http://localhost:5001 或 https://api.example.com"
+              placeholder="e.g., http://localhost:5001 or https://api.example.com"
             />
           </div>
           <div class="form-row">
-            <label>生成产品ID</label>
-            <input id="codeProductId" placeholder="留空则使用上方的产品ID" />
+            <label>Product ID</label>
+            <input
+              id="codeProductId"
+              placeholder="Leave empty to use the product ID above"
+            />
           </div>
           <div class="form-row">
-            <label>生成数量</label>
+            <label>Quantity</label>
             <input
               id="codeQuantity"
               type="number"
@@ -207,37 +216,40 @@
             />
           </div>
           <div class="form-row">
-            <label>扫码上限</label>
+            <label>Scan Limit</label>
             <input id="codeScanLimit" type="number" min="1" value="3" />
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap">
             <button id="generate-codes" class="btn primary">
-              批量生成二维码
+              Batch Generate QR Codes
             </button>
-            <button id="refresh-code-list" class="btn">刷新二维码列表</button>
+            <button id="refresh-code-list" class="btn">
+              Refresh QR Code List
+            </button>
           </div>
           <div id="latest-code-batch" class="hidden" style="margin-top: 16px">
-            <h4>最新生成结果</h4>
+            <h4>Latest Generation Results</h4>
             <p>
-              共生成 <strong id="latest-code-count">0</strong> 个二维码。
+              Total Generated: <strong id="latest-code-count">0</strong> QR
+              Codes.
               <button
                 id="download-latest-csv"
                 class="btn"
                 style="margin-left: 8px"
               >
-                导出CSV
+                Export CSV
               </button>
             </p>
             <div style="overflow-x: auto">
               <table class="stats-table">
                 <thead>
                   <tr>
-                    <th>序号</th>
-                    <th>二维码</th>
+                    <th>No.</th>
+                    <th>QR Code</th>
                     <th>Code</th>
                     <th>Token</th>
-                    <th>扫描链接</th>
-                    <th>创建时间</th>
+                    <th>Scan Link</th>
+                    <th>Created At</th>
                   </tr>
                 </thead>
                 <tbody id="latest-code-body"></tbody>
@@ -245,19 +257,21 @@
             </div>
           </div>
           <div style="margin-top: 16px">
-            <h4>当前产品的全部二维码</h4>
-            <p id="code-empty" style="color: #777">暂无记录，请先生成。</p>
+            <h4>All QR Codes for Current Product</h4>
+            <p id="code-empty" style="color: #777">
+              No records yet. Please generate first.
+            </p>
             <div style="overflow-x: auto">
               <table class="stats-table" id="code-table">
                 <thead>
                   <tr>
                     <th>Code</th>
-                    <th>状态</th>
-                    <th>累计扫描</th>
-                    <th>上限</th>
-                    <th>创建时间</th>
-                    <th>最近扫码</th>
-                    <th>操作</th>
+                    <th>Status</th>
+                    <th>Total Scans</th>
+                    <th>Limit</th>
+                    <th>Created At</th>
+                    <th>Last Scan</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="code-table-body"></tbody>

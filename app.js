@@ -693,10 +693,11 @@
     generateBarcode(codeId || CODE_ID);
   }
 
-  function showFirstScan(cfg) {
+  function showFirstScan(cfg, scanCount = 1) {
     // 第一次扫描时显示验证成功页面
+    // 使用传入的实际扫描次数，而不是硬编码的1
     const limit = Math.max(1, parseInt(cfg?.scanLimit, 10) || 3);
-    showVerificationSuccess(1, CODE_ID, limit);
+    showVerificationSuccess(scanCount, CODE_ID, limit);
 
     const purchaseLinks = document.getElementById("purchase-links");
     const invalidSection = document.getElementById("invalid-section");
@@ -849,7 +850,7 @@
       return stats;
     }
     if (stats.order === 1) {
-      showFirstScan(cfg);
+      showFirstScan(cfg, stats.used);
     } else if (stats.order === 2) {
       showSecondScan(cfg);
     } else {
@@ -889,7 +890,8 @@
           activateLimitMode({ codeId: CODE_ID });
           order = 4;
         } else if (status === "first" || totalCount === 1) {
-          showFirstScan(cfg);
+          // 传入实际的扫描次数
+          showFirstScan(cfg, totalCount);
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           showSecondScan(cfg);
@@ -1009,7 +1011,8 @@
           activateLimitMode({ codeId: CODE_ID });
           order = 4;
         } else if (status === "first" || totalCount === 1) {
-          showFirstScan(cfg);
+          // 传入实际的扫描次数
+          showFirstScan(cfg, totalCount);
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           showSecondScan(cfg);
@@ -1041,7 +1044,7 @@
 
     let order = 3;
     if (count === 1) {
-      showFirstScan(cfg);
+      showFirstScan(cfg, count);
       order = 1;
     } else if (count < limit) {
       showSecondScan(cfg);
@@ -1113,6 +1116,9 @@
       await handleLegacyFlow(cfg, did);
     }
 
+    // 注意：不要在这里再次调用recordScanRemote，因为handleTokenFlow和handleLegacyFlow已经调用过了
+    // 再次调用会导致扫描次数重复增加
+
     // 如果有CODE_ID，默认显示验证成功页面（用于测试和演示）
     // 可以通过 ?showVerification=0 来禁用
     // 如果没有CODE_ID，可以通过 ?showVerification=1 来强制显示（用于测试）
@@ -1128,17 +1134,20 @@
         // 检查验证页面是否已经显示
         const verificationEl = document.getElementById("verification-success");
         if (verificationEl && verificationEl.classList.contains("hidden")) {
-          const scanCount = getScanCount(STORAGE_SCOPE, did);
+          // 如果验证页面还没有显示，使用本地存储的扫描次数
+          // 注意：handleTokenFlow/handleLegacyFlow已经调用了recordScanRemote并更新了服务器数据
+          // 这里不应该再次调用API，否则会导致扫描次数重复增加
+          const scanCount = getScanCount(STORAGE_SCOPE, did) + 1;
           const codeIdToUse = CODE_ID || "TEST-" + Date.now();
           const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
-          console.log("准备显示验证成功页面", {
+          console.log("准备显示验证成功页面（延迟显示）", {
             scanCount,
             codeIdToUse,
             CODE_ID,
             forceShow,
             limit,
           });
-          showVerificationSuccess(scanCount + 1, codeIdToUse, limit);
+          showVerificationSuccess(scanCount, codeIdToUse, limit);
         }
       }, 1500);
     } else if (!CODE_ID) {
