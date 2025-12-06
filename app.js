@@ -177,10 +177,14 @@
       const res = await fetch(`./configs/${pid}.json?t=${Date.now()}`, {
         cache: "no-store",
       });
-      if (!res.ok) throw new Error("not found");
+      if (!res.ok) {
+        // 配置文件不存在是正常情况，不输出错误
+        return null;
+      }
       const data = await res.json();
       return data;
     } catch (e) {
+      // 静默处理错误，配置文件不存在是正常情况
       return null;
     }
   }
@@ -389,8 +393,11 @@
   }
 
   function renderContent(cfg) {
-    // 1. 保持顶部标题不变
-    setText("product-name", "Improved composition with finest ingredients.");
+    // 1. 保持顶部标题不变，使用HTML格式支持换行和斜体
+    setHTML(
+      "product-name",
+      "Improved composition with<br/><em>finest ingredients.</em>"
+    );
     setText("hero-art", "Premium • Elegant • Reliable");
 
     // 2. 智能渲染规格 (Specs) - 让它变成漂亮的列表，而不是一段死板的文字
@@ -453,10 +460,251 @@
     }
   }
 
-  function showFirstScan() {
-    document.getElementById("purchase-links").classList.remove("hidden");
-    document.getElementById("invalid-section").classList.add("hidden");
-    document.getElementById("coupon-modal").classList.add("hidden");
+  // 生成条形码（基于二维码ID，实现一物一码）
+  function generateBarcode(codeId) {
+    if (!codeId) {
+      // 如果没有codeId，生成一个基于时间戳的临时ID
+      codeId = `TEMP-${Date.now()}`;
+    }
+
+    // 将codeId转换为条形码数字（EAN-13格式：13位数字）
+    // 使用哈希函数将codeId转换为数字字符串
+    function codeIdToBarcodeNumber(codeId) {
+      // 简单的哈希函数，将字符串转换为数字
+      let hash = 0;
+      for (let i = 0; i < codeId.length; i++) {
+        const char = codeId.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // 转换为32位整数
+      }
+
+      // 取绝对值并转换为字符串
+      const numStr = Math.abs(hash).toString();
+
+      // 生成13位EAN-13格式的条形码数字
+      // 格式：前缀(1位) + 厂商代码(6位) + 产品代码(5位) + 校验位(1位)
+      let barcode = "6"; // 前缀（6表示美国/加拿大）
+
+      // 填充到12位
+      const padded = numStr.padStart(12, "0").substring(0, 12);
+      barcode += padded;
+
+      // 计算EAN-13校验位
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        const digit = parseInt(barcode[i], 10);
+        if (isNaN(digit)) {
+          // 如果某个字符不是数字，使用0
+          barcode = barcode.substring(0, i) + "0" + barcode.substring(i + 1);
+          sum += 0;
+        } else {
+          sum += i % 2 === 0 ? digit : digit * 3;
+        }
+      }
+      const checkDigit = (10 - (sum % 10)) % 10;
+      barcode += checkDigit.toString();
+
+      // 验证条形码是13位纯数字
+      if (barcode.length !== 13 || !/^\d{13}$/.test(barcode)) {
+        // 如果生成失败，使用默认值
+        console.warn("条形码生成失败，使用默认值", barcode);
+        barcode = "6970244633822";
+      }
+
+      return barcode;
+    }
+
+    const barcodeNumber = codeIdToBarcodeNumber(codeId);
+
+    // 格式化显示：6 | 970244 | 633822
+    const formatted = `${barcodeNumber[0]} | ${barcodeNumber.substring(
+      1,
+      7
+    )} | ${barcodeNumber.substring(7)}`;
+
+    // 使用JsBarcode生成条形码
+    const svg = document.getElementById("barcode-svg");
+    if (svg) {
+      // 清空SVG内容
+      svg.innerHTML = "";
+
+      // 检查JsBarcode是否已加载
+      if (typeof JsBarcode !== "undefined") {
+        try {
+          JsBarcode(svg, barcodeNumber, {
+            format: "EAN13",
+            width: 2,
+            height: 80,
+            displayValue: false,
+            background: "#ffffff",
+            lineColor: "#000000",
+          });
+        } catch (e) {
+          console.warn(
+            "Barcode generation failed:",
+            e,
+            "Barcode number:",
+            barcodeNumber
+          );
+          // 如果生成失败，尝试使用CODE128格式
+          try {
+            JsBarcode(svg, barcodeNumber, {
+              format: "CODE128",
+              width: 2,
+              height: 80,
+              displayValue: false,
+              background: "#ffffff",
+              lineColor: "#000000",
+            });
+          } catch (e2) {
+            // 如果CODE128也失败，显示一个简单的条形码占位符
+            svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/>`;
+          }
+        }
+      } else {
+        // 如果JsBarcode还没加载，等待加载完成后再生成
+        const checkJsBarcode = setInterval(() => {
+          if (typeof JsBarcode !== "undefined") {
+            clearInterval(checkJsBarcode);
+            try {
+              JsBarcode(svg, barcodeNumber, {
+                format: "EAN13",
+                width: 2,
+                height: 80,
+                displayValue: false,
+                background: "#ffffff",
+                lineColor: "#000000",
+              });
+            } catch (e) {
+              console.error("Barcode generation failed:", e);
+            }
+          }
+        }, 100);
+        // 10秒后停止检查
+        setTimeout(() => clearInterval(checkJsBarcode), 10000);
+      }
+    }
+
+    // 更新条形码数字显示
+    const numbersEl = document.getElementById("barcode-numbers");
+    if (numbersEl) {
+      numbersEl.textContent = formatted;
+    }
+
+    return { barcodeNumber, formatted };
+  }
+
+  // 显示验证成功页面
+  function showVerificationSuccess(scanCount, codeId, scanLimit = 3) {
+    const verificationEl = document.getElementById("verification-success");
+    if (!verificationEl) {
+      console.error("验证成功页面元素未找到");
+      return;
+    }
+
+    console.log("显示验证成功页面", { scanCount, codeId, scanLimit });
+
+    // 不隐藏其他内容，让主页面内容正常显示在下面
+    // 只隐藏scan-counter（因为验证页面已经显示了扫描信息）
+    const scanCounter = document.getElementById("scan-counter");
+    if (scanCounter) scanCounter.classList.add("hidden");
+
+    // 确保主页面内容始终显示
+    const productMain = document.getElementById("product-main");
+    if (productMain) {
+      productMain.classList.remove("hidden");
+      productMain.style.display = "";
+    }
+
+    // 显示验证成功页面 - 作为正常的页面内容块显示在顶部
+    verificationEl.classList.remove("hidden");
+    verificationEl.style.display = "block";
+
+    // 更新扫描次数
+    const scanCountEl = document.getElementById("verification-scan-count");
+    if (scanCountEl) {
+      scanCountEl.textContent = scanCount || 1;
+    }
+
+    // 判断是否超过扫描限制
+    const isExceeded = scanCount > scanLimit;
+
+    // 显示/隐藏图标
+    const checkmarkIcon = document.getElementById("checkmark-icon");
+    const crossIcon = document.getElementById("cross-icon");
+    if (checkmarkIcon && crossIcon) {
+      if (isExceeded) {
+        checkmarkIcon.classList.add("hidden");
+        crossIcon.classList.remove("hidden");
+      } else {
+        checkmarkIcon.classList.remove("hidden");
+        crossIcon.classList.add("hidden");
+      }
+    }
+
+    // 超过限制时隐藏条形码
+    const barcodeContainer = document.querySelector(".barcode-container");
+    if (barcodeContainer) {
+      if (isExceeded) {
+        barcodeContainer.classList.add("hidden");
+      } else {
+        barcodeContainer.classList.remove("hidden");
+      }
+    }
+
+    // 更新状态文字
+    const statusTitle = document.getElementById("verification-status-title");
+    const statusDescription = document.getElementById(
+      "verification-status-description"
+    );
+    const statusNote = document.getElementById("verification-status-note");
+
+    if (isExceeded) {
+      // 超过限制时显示红色叉和相应文字
+      if (statusTitle) {
+        statusTitle.textContent = "MULTIPLE VERIFICATION";
+        statusTitle.style.color = "#000";
+      }
+      if (statusDescription) {
+        statusDescription.textContent =
+          "This anti-counterfeit code has been scanned multiple times.";
+      }
+      if (statusNote) {
+        statusNote.innerHTML =
+          "<em>Please purchase the genuine product through a reliable seller.</em>";
+      }
+    } else {
+      // 未超过限制时显示绿色对勾和正常文字
+      if (statusTitle) {
+        statusTitle.textContent = "THIS IS GENUINE PRODUCT";
+        statusTitle.style.color = "#000";
+      }
+      if (statusDescription) {
+        statusDescription.textContent =
+          "This product has been identified by the system as genuine.";
+      }
+      if (statusNote) {
+        statusNote.innerHTML =
+          "<em>Please feel at ease to use the product.</em>";
+      }
+    }
+
+    // 生成条形码
+    generateBarcode(codeId || CODE_ID);
+  }
+
+  function showFirstScan(cfg) {
+    // 第一次扫描时显示验证成功页面
+    const limit = Math.max(1, parseInt(cfg?.scanLimit, 10) || 3);
+    showVerificationSuccess(1, CODE_ID, limit);
+
+    const purchaseLinks = document.getElementById("purchase-links");
+    const invalidSection = document.getElementById("invalid-section");
+    const couponModal = document.getElementById("coupon-modal");
+
+    if (purchaseLinks) purchaseLinks.classList.remove("hidden");
+    if (invalidSection) invalidSection.classList.add("hidden");
+    if (couponModal) couponModal.classList.add("hidden");
   }
   function showSecondScan(cfg) {
     document.getElementById("purchase-links").classList.remove("hidden");
@@ -469,16 +717,25 @@
     document.getElementById("coupon-modal").classList.add("hidden");
   }
   function showInvalid() {
-    document.getElementById("purchase-links").classList.add("hidden");
-    document.getElementById("coupon-modal").classList.add("hidden");
-    document.getElementById("invalid-section").classList.remove("hidden");
-    document.querySelectorAll("a").forEach((a) => {
-      if (a.id !== "admin-link") {
-        a.replaceWith(document.createTextNode(a.textContent));
-      }
-    });
-    const adminLink = document.getElementById("admin-link");
-    if (adminLink) adminLink.closest(".footer").classList.add("hidden");
+    // 验证页面已经显示了验证状态，不需要显示invalid-section
+    // 主页面内容应该始终显示
+    const purchaseLinks = document.getElementById("purchase-links");
+    const couponModal = document.getElementById("coupon-modal");
+    const invalidSection = document.getElementById("invalid-section");
+
+    if (purchaseLinks) purchaseLinks.classList.add("hidden");
+    if (couponModal) couponModal.classList.add("hidden");
+    // 不显示invalid-section，因为验证页面已经显示了验证状态
+    // if (invalidSection) invalidSection.classList.remove("hidden");
+
+    // 不删除链接，保持主页面内容完整
+    // document.querySelectorAll("a").forEach((a) => {
+    //   if (a.id !== "admin-link") {
+    //     a.replaceWith(document.createTextNode(a.textContent));
+    //   }
+    // });
+    // const adminLink = document.getElementById("admin-link");
+    // if (adminLink) adminLink.closest(".footer").classList.add("hidden");
   }
 
   function updateScanHint(count, limit) {
@@ -536,9 +793,11 @@
         console.warn("Invalid limitPage override", e);
       }
     }
-    if (productMainEl) productMainEl.classList.add("hidden");
+    // 不隐藏主页面内容，验证页面只是用来验证，主页面内容应该始终显示
+    // if (productMainEl) productMainEl.classList.add("hidden");
     if (!limitViewEl) return;
-    limitViewEl.classList.remove("hidden");
+    // 也不显示limit-view，因为验证页面已经显示了验证状态
+    // limitViewEl.classList.remove("hidden");
     const codeValue = CODE_ID || source.codeId;
     if (limitCodeEl && limitCodeValueEl) {
       if (codeValue) {
@@ -583,12 +842,14 @@
     renderScanCounter(stats.limit, stats.remaining, stats.used);
     updateScanHint(stats.used, stats.limit);
     if (stats.remaining <= 0) {
+      // 超过限制时显示验证页面（红色叉）
+      showVerificationSuccess(stats.used, payload.codeId, stats.limit);
       showInvalid();
       activateLimitMode({ codeId: payload.codeId });
       return stats;
     }
     if (stats.order === 1) {
-      showFirstScan();
+      showFirstScan(cfg);
     } else if (stats.order === 2) {
       showSecondScan(cfg);
     } else {
@@ -622,11 +883,13 @@
 
         let order = 3;
         if (status === "invalid" || totalCount >= limit) {
+          // 超过限制时显示验证页面（红色叉）
+          showVerificationSuccess(totalCount, CODE_ID, limit);
           showInvalid();
           activateLimitMode({ codeId: CODE_ID });
           order = 4;
         } else if (status === "first" || totalCount === 1) {
-          showFirstScan();
+          showFirstScan(cfg);
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           showSecondScan(cfg);
@@ -740,11 +1003,13 @@
 
         let order = 3;
         if (status === "invalid" || totalCount >= limit) {
+          // 超过限制时显示验证页面（红色叉）
+          showVerificationSuccess(totalCount, CODE_ID, limit);
           showInvalid();
           activateLimitMode({ codeId: CODE_ID });
           order = 4;
         } else if (status === "first" || totalCount === 1) {
-          showFirstScan();
+          showFirstScan(cfg);
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           showSecondScan(cfg);
@@ -776,12 +1041,14 @@
 
     let order = 3;
     if (count === 1) {
-      showFirstScan();
+      showFirstScan(cfg);
       order = 1;
     } else if (count < limit) {
       showSecondScan(cfg);
       order = 2;
     } else {
+      // 超过限制时显示验证页面（红色叉）
+      showVerificationSuccess(count, CODE_ID, limit);
       showInvalid();
       activateLimitMode({ codeId: CODE_ID });
       order = 4;
@@ -844,6 +1111,45 @@
     const handled = await handleTokenFlow(cfg, did);
     if (!handled) {
       await handleLegacyFlow(cfg, did);
+    }
+
+    // 如果有CODE_ID，默认显示验证成功页面（用于测试和演示）
+    // 可以通过 ?showVerification=0 来禁用
+    // 如果没有CODE_ID，可以通过 ?showVerification=1 来强制显示（用于测试）
+    const shouldShowVerification = qs.get("showVerification") !== "0";
+    const forceShow = qs.get("showVerification") === "1";
+
+    // 如果URL中有showVerification=1参数，或者有CODE_ID，则显示验证成功页面
+    // 注意：如果handleTokenFlow或handleLegacyFlow已经调用了showVerificationSuccess，这里就不需要再调用了
+    // 但为了确保显示，我们仍然在延迟后检查并显示
+    if (forceShow || (shouldShowVerification && CODE_ID)) {
+      // 延迟显示，确保页面加载完成和扫码逻辑处理完成
+      setTimeout(() => {
+        // 检查验证页面是否已经显示
+        const verificationEl = document.getElementById("verification-success");
+        if (verificationEl && verificationEl.classList.contains("hidden")) {
+          const scanCount = getScanCount(STORAGE_SCOPE, did);
+          const codeIdToUse = CODE_ID || "TEST-" + Date.now();
+          const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
+          console.log("准备显示验证成功页面", {
+            scanCount,
+            codeIdToUse,
+            CODE_ID,
+            forceShow,
+            limit,
+          });
+          showVerificationSuccess(scanCount + 1, codeIdToUse, limit);
+        }
+      }, 1500);
+    } else if (!CODE_ID) {
+      // 如果没有CODE_ID且没有强制显示参数，默认也显示验证页面（用于演示）
+      setTimeout(() => {
+        const verificationEl = document.getElementById("verification-success");
+        if (verificationEl && verificationEl.classList.contains("hidden")) {
+          const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
+          showVerificationSuccess(1, "DEMO-" + Date.now(), limit);
+        }
+      }, 1500);
     }
 
     // 确保计数器已更新（双重检查）

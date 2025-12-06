@@ -9,6 +9,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css?v={{ts}}" />
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   </head>
   <body>
     <div id="loading-overlay">
@@ -17,10 +18,86 @@
     </div>
 
     <header class="header">
-      <h1 id="product-name">MIRACLE WHITE</h1>
+      <h1>MIRACLE WHITE</h1>
     </header>
 
-    <div class="hero-art" id="hero-art">The Essence of Radiance</div>
+    <!-- 验证成功页面 - 显示在顶部，主内容在下方 -->
+    <div id="verification-success" class="verification-success hidden">
+      <!-- Logo -->
+      <div class="verification-logo">
+        <div class="logo-mw">MW</div>
+        <div class="logo-text">MIRACLE WHITE</div>
+      </div>
+
+      <!-- 验证内容 -->
+      <div class="verification-content">
+        <h1 class="verification-title">VERIFICATION</h1>
+        <p class="verification-thanks">
+          We appreciate your support and participation in this effort to
+          eliminate counterfeit products.
+        </p>
+        <div class="scan-count-display">
+          SCAN: <span id="verification-scan-count">1</span>
+        </div>
+        <div class="verification-checkmark">
+          <div class="checkmark-circle" id="verification-icon">
+            <!-- 绿色对勾图标 -->
+            <svg
+              viewBox="0 0 100 100"
+              class="checkmark-svg"
+              id="checkmark-icon"
+            >
+              <circle cx="50" cy="50" r="45" fill="#4caf50" />
+              <path
+                d="M30 50 L45 65 L70 35"
+                stroke="white"
+                stroke-width="6"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <!-- 红色叉图标 -->
+            <svg viewBox="0 0 100 100" class="cross-svg hidden" id="cross-icon">
+              <circle cx="50" cy="50" r="45" fill="#d32f2f" />
+              <path
+                d="M30 30 L70 70 M70 30 L30 70"
+                stroke="white"
+                stroke-width="6"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+        <h2 class="genuine-title" id="verification-status-title">
+          THIS IS GENUINE PRODUCT
+        </h2>
+        <p class="genuine-description" id="verification-status-description">
+          This product has been identified by the system as genuine.
+        </p>
+        <p class="genuine-note" id="verification-status-note">
+          <em>Please feel at ease to use the product.</em>
+        </p>
+
+        <!-- 条形码 -->
+        <div class="barcode-container">
+          <svg id="barcode-svg" class="barcode-svg"></svg>
+          <div class="barcode-numbers" id="barcode-numbers">
+            6 | 970244 | 633822
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 产品标题和标语 - 显示在验证页面之后 -->
+    <div class="hero-art" id="hero-art">Premium • Elegant • Reliable</div>
+    <div class="product-title-section">
+      <h1 id="product-name" class="product-title">
+        Improved composition with<br /><em>finest ingredients.</em>
+      </h1>
+    </div>
 
     <div class="scan-counter-wrapper" id="scan-counter">
       <div class="counter-header">
