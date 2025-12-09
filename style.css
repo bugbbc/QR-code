@@ -38,9 +38,23 @@ body {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #f0f0f0;
   z-index: 100;
-  padding: 16px 0;
-  text-align: center;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
 }
+
+.header-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .header h1 {
   margin: 0;
   font-family: var(--font-sans);
@@ -49,6 +63,22 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--primary-color);
+  flex: 1;
+  text-align: center;
+}
+
+/* 响应式：小屏幕时调整logo大小 */
+@media (max-width: 480px) {
+  .header-logo {
+    height: 32px;
+    left: 12px;
+  }
+  .header {
+    padding: 10px 12px;
+  }
+  .header h1 {
+    font-size: 16px;
+  }
 }
 
 /* --- Hero Slogan --- */
@@ -584,31 +614,6 @@ body {
   opacity: 0.7;
 }
 
-/* Logo */
-.verification-logo {
-  text-align: left;
-  padding: 30px 20px 20px;
-  background: #fff;
-}
-
-.logo-mw {
-  font-family: var(--font-serif);
-  font-size: 48px;
-  font-weight: 600;
-  color: #000;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.logo-text {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #000;
-  font-weight: 500;
-}
-
 /* 验证内容 */
 .verification-content {
   padding: 20px 24px 40px;
@@ -739,10 +744,6 @@ body {
   .verification-title {
     font-size: 36px;
     letter-spacing: 2px;
-  }
-
-  .logo-mw {
-    font-size: 40px;
   }
 
   .checkmark-circle {
