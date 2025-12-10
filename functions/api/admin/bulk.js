@@ -220,14 +220,16 @@
 // }
 // functions/api/admin/codes/bulk.js
 
+// functions/api/admin/codes/bulk.js
+
 export async function onRequest(context) {
   const { request } = context;
 
   const info = {
     ok: true,
-    from: "bulk-test",
+    from: "bulk-test-v2",
     method: request.method,
-    hint: "如果你能看到这段 JSON，说明 bulk.js 已经被 Cloudflare 正确加载并接管了这个路由。",
+    url: request.url,
   };
 
   return new Response(JSON.stringify(info), {
