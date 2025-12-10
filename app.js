@@ -193,6 +193,14 @@
     if (!raw) return DEFAULT_CONFIG;
     try {
       const cfg = JSON.parse(raw);
+      // 检查配置是否包含中文，如果包含中文则使用英文默认配置
+      if (isChineseConfig(cfg)) {
+        console.log("检测到本地存储的中文配置，清除并使用英文默认配置");
+        // 清除中文配置，使用英文默认配置
+        localStorage.removeItem(LS_KEYS.config(pid));
+        return DEFAULT_CONFIG;
+      }
+
       return { ...DEFAULT_CONFIG, ...cfg, productId: pid };
     } catch (e) {
       return DEFAULT_CONFIG;
@@ -1159,15 +1167,47 @@
     await updateStats(order);
   }
 
+  // 检查配置是否包含中文
+  function hasChinese(text) {
+    if (!text) return false;
+    return /[\u4e00-\u9fa5]/.test(text);
+  }
+
+  // 检查配置对象是否包含中文
+  function isChineseConfig(cfg) {
+    if (!cfg) return false;
+    return (
+      hasChinese(cfg.name) ||
+      hasChinese(cfg.specs) ||
+      hasChinese(cfg.features) ||
+      hasChinese(cfg.usage) ||
+      hasChinese(cfg.contact)
+    );
+  }
+
   async function main() {
     let cfg = DEFAULT_CONFIG;
     if (CODE_ID) {
       const byCode = await fetchCodeConfig(CODE_ID);
-      if (byCode) cfg = { ...DEFAULT_CONFIG, ...byCode, productId: PRODUCT_ID };
+      if (byCode) {
+        // 如果服务器返回的配置包含中文，使用英文默认配置
+        if (isChineseConfig(byCode)) {
+          console.log("服务器返回的配置包含中文，使用英文默认配置");
+          cfg = DEFAULT_CONFIG;
+        } else {
+          cfg = { ...DEFAULT_CONFIG, ...byCode, productId: PRODUCT_ID };
+        }
+      }
     } else {
       const remote = await fetchRemoteConfig(PRODUCT_ID);
       if (remote) {
-        cfg = { ...DEFAULT_CONFIG, ...remote, productId: PRODUCT_ID };
+        // 如果远程配置包含中文，使用英文默认配置
+        if (isChineseConfig(remote)) {
+          console.log("远程配置包含中文，使用英文默认配置");
+          cfg = DEFAULT_CONFIG;
+        } else {
+          cfg = { ...DEFAULT_CONFIG, ...remote, productId: PRODUCT_ID };
+        }
       } else {
         cfg = getConfig(PRODUCT_ID);
       }

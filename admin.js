@@ -9,22 +9,23 @@
   const API_DEFAULT = "http://localhost:5001";
   let latestCodeBatch = [];
 
-  // 默认配置，与 index 页面一致（用作回填）
+  // 默认配置，与 index 页面一致（用作回填）- 使用英文内容
   const DEFAULT_CONFIG = {
-    name: "高品质示例产品",
+    name: "Improved composition with finest ingredients.",
     specs:
-      "规格参数示例：\n- 型号：X100\n- 尺寸：120x80x60mm\n- 重量：450g\n- 材质：ABS+铝合金",
+      "Specifications:\n- Size: 120 x 80 x 60 mm\n- Weight: 450 g\n- Material: ABS + Aluminum\n- Type: Advanced Brightening Booster",
     features:
-      "功能介绍：\n- 支持多场景使用\n- 节能低噪设计\n- 便携易用\n- 安全可靠",
+      "BRIGHTENS AND DIMINISHES DARK SPOTS\nOur advanced formula targets uneven skin tone, effectively reducing the appearance of dark spots and blemishes.\n\nPROTECTS AGAINST HYPERPIGMENTATION\nOur unique blend of ingredients creates a protective barrier against environmental factors that can cause hyperpigmentation.\n\nRESULTS SHOWN IN LESS THAN 7 DAYS\nUnlike other products that take weeks to show effects, Miracle White delivers visible improvements in under a week.",
     usage:
-      "使用说明：\n1. 开箱检查附件是否齐全\n2. 按照说明连接并通电\n3. 初次使用请阅读安全须知",
+      "How to Use:\n1) Check accessories are complete after unboxing.\n2) Follow the instructions for connection and activation.\n3) Please read the safety notes before first use.",
     contact:
-      "售后联系方式：\n- 官方客服：400-000-0000\n- 邮箱：support@example.com",
+      "Customer Support:\n- Hotline: +1-000-000-0000\n- Email: support@example.com",
     purchaseLinks: [
-      { text: "官网", url: "https://example.com" },
-      { text: "电商平台", url: "https://example.com/shop" },
+      { text: "Official Site", url: "https://example.com" },
+      { text: "Online Store", url: "https://example.com/shop" },
     ],
-    couponText: "感谢再次光临！点击按钮可领取老客户专属优惠券。",
+    couponText:
+      "Thanks for being a returning customer! Click to claim your exclusive discount.",
     couponUrl: "https://example.com/coupon",
     scanLimit: 3,
   };
