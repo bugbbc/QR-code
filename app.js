@@ -411,6 +411,8 @@
     // 2. 智能渲染规格 (Specs) - 让它变成漂亮的列表，而不是一段死板的文字
     const specsEl = document.getElementById("product-specs");
     if (specsEl && cfg.specs) {
+      // 确保元素有 translate="no" 属性，防止浏览器自动翻译
+      specsEl.setAttribute("translate", "no");
       // 把文本按行分割，过滤掉空行
       const lines = cfg.specs.split("\n").filter((line) => line.trim());
       // 生成带图标样式的 HTML
@@ -419,9 +421,9 @@
           // 去掉原本可能存在的 "- " 符号，让样式更统一
           const cleanLine = line.replace(/^-\s*/, "").replace(/^[•]\s*/, "");
           return `
-          <div class="spec-item" style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+          <div class="spec-item" style="display: flex; align-items: flex-start; margin-bottom: 8px;" translate="no">
             <div style="min-width: 6px; height: 6px; border-radius: 50%; background: #c7a878; margin-top: 9px; margin-right: 10px;"></div>
-            <span style="color: #555;">${cleanLine}</span>
+            <span style="color: #555;" translate="no">${cleanLine}</span>
           </div>
         `;
         })
@@ -431,22 +433,30 @@
     // 3. 智能渲染功能 (Features) - 同样处理换行
     const featuresEl = document.getElementById("product-features");
     if (featuresEl && cfg.features) {
+      // 确保元素有 translate="no" 属性，防止浏览器自动翻译
+      featuresEl.setAttribute("translate", "no");
       // 将换行符转换为 HTML 的换行，增加段落间距
       featuresEl.innerHTML = cfg.features.replace(/\n/g, "<br/>");
     }
 
     // 4. 其他部分保持原样
-    setText("product-usage", cfg.usage);
+    const usageEl = document.getElementById("product-usage");
+    if (usageEl) {
+      usageEl.setAttribute("translate", "no");
+      setText("product-usage", cfg.usage);
+    }
 
     // 如果想要联系方式也好看点，可以把换行转为 <br>
     const contactEl = document.getElementById("product-contact");
     if (contactEl && cfg.contact) {
+      contactEl.setAttribute("translate", "no");
       contactEl.innerHTML = (cfg.contact || "").replace(/\n/g, "<br/>");
     }
 
     // 底部联系方式同理
     const contactBottomEl = document.getElementById("product-contact-bottom");
     if (contactBottomEl) {
+      contactBottomEl.setAttribute("translate", "no");
       contactBottomEl.innerHTML = (cfg.contact || "").replace(/\n/g, "<br/>");
     }
 
