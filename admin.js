@@ -1020,7 +1020,23 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       body: JSON.stringify(payload),
     });
     if (!resp.ok) {
-      throw new Error("生成失败，请检查 API 服务是否可用");
+      let detail = "";
+      try {
+        const raw = await resp.text();
+        detail = raw;
+        const parsed = JSON.parse(raw);
+        if (parsed?.error) detail = parsed.error;
+      } catch (e) {
+        /* ignore parse failures */
+      }
+      if (resp.status === 404) {
+        throw new Error(
+          "生成失败：找不到 /api/codes/bulk-generate 路由，确认 Pages Functions 已部署并使用相对路径或正确的 apiBase。"
+        );
+      }
+      throw new Error(
+        `生成失败：${detail || "请检查 API 服务是否可用（可能未绑定 KV 或路由错误）"}`
+      );
     }
     const data = await resp.json();
     if (!data.ok) {
