@@ -195,8 +195,23 @@
             <label>API Service Address</label>
             <input
               id="apiBase"
-              placeholder="e.g., http://localhost:5001 or https://api.example.com"
+              placeholder="留空则使用相对路径 (/api/...)，或填写完整 API 地址（如 Cloudflare Workers URL）"
             />
+            <small
+              style="
+                display: block;
+                margin-top: 4px;
+                color: #666;
+                font-size: 12px;
+              "
+            >
+              💡 提示：如果 API 部署在同一个域名下（如
+              miraclewhite.top），可以留空此字段使用相对路径。
+              <br />
+              如果 API 部署在 Cloudflare Workers，请填写完整的 Worker URL。
+              <br />
+              ⚠️ 不要使用 localhost 地址，因为从域名访问时无法访问 localhost。
+            </small>
           </div>
           <div class="form-row">
             <label>Product ID</label>
