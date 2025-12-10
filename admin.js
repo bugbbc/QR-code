@@ -6,7 +6,7 @@
     scanCountsPrefix: (pid) => `scanCount:${pid}:`,
   };
   const DEFAULT_PID = "default-product";
-  const API_DEFAULT = "http://localhost:5001";
+  const API_DEFAULT = "";
   let latestCodeBatch = [];
 
   // 默认配置，与 index 页面一致（用作回填）- 使用英文内容
@@ -184,8 +184,13 @@
     const apiInput = el("apiBase");
     let raw =
       apiInput && apiInput.value.trim() ? apiInput.value.trim() : API_DEFAULT;
-    // 如果用户输入的是 localhost 或 IP 地址，默认使用 http
-    // 否则使用 https
+
+    // 如果仍然为空，说明走相对路径：/api/...
+    if (!raw) {
+      return ""; // 返回空，后面用相对路径
+    }
+
+    // 用户填了东西，再补 http/https
     if (!/^https?:\/\//i.test(raw)) {
       if (/^localhost|^\d+\.\d+\.\d+\.\d+/i.test(raw)) {
         raw = `http://${raw}`;
@@ -982,7 +987,10 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     const apiBase = resolveApiBase();
     const baseUrl = `${resolveServerOrigin()}/index.html`;
     // 如果 API 地址是 localhost，给出警告
-    if (apiBase && (apiBase.includes("localhost") || apiBase.includes("127.0.0.1"))) {
+    if (
+      apiBase &&
+      (apiBase.includes("localhost") || apiBase.includes("127.0.0.1"))
+    ) {
       const confirmMsg = `警告：您配置的 API 地址是 ${apiBase}，这是本地地址。\n\n如果您的 API 部署在远程服务器上，请使用实际的 API 地址（如 Cloudflare Workers URL 或您的 API 域名）。\n\n如果 API 部署在同一个域名下，可以留空此字段使用相对路径。\n\n是否继续使用 ${apiBase}？`;
       if (!confirm(confirmMsg)) {
         return; // 用户取消，不生成二维码
@@ -990,11 +998,14 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     }
     // 确保URL包含apiBase参数，这样扫描时才能正确调用API
     // 如果 apiBase 为空，不添加 api 参数，使用相对路径
-    const baseUrlWithApi = apiBase && !apiBase.includes("localhost") && !apiBase.includes("127.0.0.1")
-      ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}api=${encodeURIComponent(
-          apiBase
-        )}`
-      : baseUrl;
+    const baseUrlWithApi =
+      apiBase &&
+      !apiBase.includes("localhost") &&
+      !apiBase.includes("127.0.0.1")
+        ? `${baseUrl}${
+            baseUrl.includes("?") ? "&" : "?"
+          }api=${encodeURIComponent(apiBase)}`
+        : baseUrl;
     const payload = {
       productId: pid,
       quantity,
@@ -1002,7 +1013,11 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       config: currentConfigFromForm(),
       baseUrl: baseUrlWithApi,
     };
-    const resp = await fetch(`${apiBase}/api/admin/codes/bulk`, {
+    const bulkUrl = apiBase
+      ? `${apiBase}/api/admin/codes/bulk` // 填了完整 API 地址
+      : `/api/admin/codes/bulk`; // 留空 → 同域名
+
+    const resp = await fetch(bulkUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1027,12 +1042,12 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       productId: pid,
       baseUrl: `${resolveServerOrigin()}/index.html`,
     });
-    const resp = await fetch(
-      `${apiBase}/api/admin/codes?${params.toString()}`,
-      {
-        cache: "no-store",
-      }
-    );
+    const listUrl = apiBase
+      ? `${apiBase}/api/admin/codes?${params.toString()}`
+      : `/api/admin/codes?${params.toString()}`;
+
+    const resp = await fetch(listUrl, { cache: "no-store" });
+
     if (!resp.ok) {
       throw new Error("获取二维码列表失败，请确认 API 服务可访问");
     }
@@ -1059,7 +1074,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
         // 如果填写了 localhost，说明是本地开发，需要用户手动修改为实际的 API 地址
         if (apiInput && !apiInput.value) {
           // 提示用户：如果 API 部署在同一个域名下，可以留空；否则填写完整的 API 地址
-          apiInput.placeholder = "留空则使用相对路径 (/api/...)，或填写完整 API 地址";
+          apiInput.placeholder =
+            "留空则使用相对路径 (/api/...)，或填写完整 API 地址";
         }
         loadConfig(DEFAULT_PID);
         refreshStats();
