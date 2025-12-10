@@ -1,4 +1,4 @@
-import { putCode } from "../_shared/db.js";
+import { putCode } from "../../_shared/db.js";
 
 const MAX_BATCH = 500;
 

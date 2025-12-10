@@ -1,4 +1,4 @@
-import { listCodes } from "../_shared/db.js";
+import { listCodes } from "../../_shared/db.js";
 
 function buildScanUrl(baseUrl, productId, codeId) {
   if (!baseUrl) return "";
