@@ -1014,8 +1014,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       baseUrl: baseUrlWithApi,
     };
     const bulkUrl = apiBase
-      ? `${apiBase}/api/admin/codes/bulk` // 填了完整 API 地址
-      : `/api/admin/codes/bulk`; // 留空 → 同域名
+      ? `${apiBase}/worker/api/codes/bulk-generate`
+      : `/worker/api/codes/bulk-generate`;
 
     const resp = await fetch(bulkUrl, {
       method: "POST",
