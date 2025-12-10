@@ -183,8 +183,14 @@
     const apiInput = el("apiBase");
     let raw =
       apiInput && apiInput.value.trim() ? apiInput.value.trim() : API_DEFAULT;
+    // 如果用户输入的是 localhost 或 IP 地址，默认使用 http
+    // 否则使用 https
     if (!/^https?:\/\//i.test(raw)) {
-      raw = `https://${raw}`;
+      if (/^localhost|^\d+\.\d+\.\d+\.\d+/i.test(raw)) {
+        raw = `http://${raw}`;
+      } else {
+        raw = `https://${raw}`;
+      }
     }
     return raw.replace(/\/$/, "");
   }

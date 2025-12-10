@@ -379,7 +379,16 @@
   async function recordScanRemote(codeId, deviceId) {
     if (!codeId || !deviceId) throw new Error("MISSING_PARAMS");
     const apiUrl = apiPath("/api/scan");
-    console.log("调用API:", apiUrl, { codeId, deviceId });
+    console.log("调用API:", apiUrl, { codeId, deviceId, API_BASE });
+
+    // 如果 API_BASE 为空，说明没有配置 API 地址，无法调用服务器 API
+    if (!API_BASE) {
+      console.warn(
+        "API_BASE 为空，无法调用服务器 API。请确保二维码 URL 中包含 api 参数。"
+      );
+      throw new Error("API_BASE_NOT_CONFIGURED");
+    }
+
     const resp = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -391,6 +400,7 @@
         status: resp.status,
         statusText: resp.statusText,
         error: text,
+        apiUrl,
       });
       throw new Error(text || "SCAN_FAILED");
     }
@@ -753,12 +763,28 @@
     if (invalidSection) invalidSection.classList.add("hidden");
     if (couponModal) couponModal.classList.add("hidden");
   }
-  function showSecondScan(cfg) {
+  function showSecondScan(cfg, scanCount = 2) {
+    // 第二次扫描时也要显示验证页面，并传入实际的扫描次数
+    const limit = Math.max(1, parseInt(cfg?.scanLimit, 10) || 3);
+    showVerificationSuccess(scanCount, CODE_ID, limit);
+
     document.getElementById("purchase-links").classList.remove("hidden");
     document.getElementById("invalid-section").classList.add("hidden");
-    document.getElementById("coupon-modal").classList.add("hidden");
+    document.getElementById("coupon-modal").classList.remove("hidden");
+
+    // 显示优惠券信息
+    const couponModal = document.getElementById("coupon-modal");
+    const couponText = document.getElementById("coupon-text");
+    const couponLink = document.getElementById("coupon-link");
+    if (couponModal) couponModal.classList.remove("hidden");
+    if (couponText && cfg.couponText) couponText.textContent = cfg.couponText;
+    if (couponLink && cfg.couponUrl) couponLink.href = cfg.couponUrl;
   }
-  function showValidScan() {
+  function showValidScan(cfg, scanCount = 3) {
+    // 其他有效扫描也要显示验证页面，并传入实际的扫描次数
+    const limit = Math.max(1, parseInt(cfg?.scanLimit, 10) || 3);
+    showVerificationSuccess(scanCount, CODE_ID, limit);
+
     document.getElementById("purchase-links").classList.remove("hidden");
     document.getElementById("invalid-section").classList.add("hidden");
     document.getElementById("coupon-modal").classList.add("hidden");
@@ -901,12 +927,10 @@
       showFirstScan(cfg, stats.used);
     } else if (stats.order === 2) {
       // 第二次扫描时也要显示验证页面，并传入实际的扫描次数
-      showVerificationSuccess(stats.used, payload.codeId, stats.limit);
-      showSecondScan(cfg);
+      showSecondScan(cfg, stats.used);
     } else {
       // 其他有效扫描也要显示验证页面，并传入实际的扫描次数
-      showVerificationSuccess(stats.used, payload.codeId, stats.limit);
-      showValidScan(cfg);
+      showValidScan(cfg, stats.used);
     }
     return stats;
   }
@@ -950,13 +974,11 @@
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           // 第二次扫描时也要显示验证页面，并传入实际的扫描次数
-          showVerificationSuccess(totalCount, CODE_ID, limit);
-          showSecondScan(cfg);
+          showSecondScan(cfg, totalCount);
           order = 2;
         } else {
           // 其他有效扫描也要显示验证页面，并传入实际的扫描次数
-          showVerificationSuccess(totalCount, CODE_ID, limit);
-          showValidScan();
+          showValidScan(cfg, totalCount);
           order = 3;
         }
 
@@ -1088,13 +1110,11 @@
           order = 1;
         } else if (status === "second" || totalCount === 2) {
           // 第二次扫描时也要显示验证页面，并传入实际的扫描次数
-          showVerificationSuccess(totalCount, CODE_ID, limit);
-          showSecondScan(cfg);
+          showSecondScan(cfg, totalCount);
           order = 2;
         } else {
           // 其他有效扫描也要显示验证页面，并传入实际的扫描次数
-          showVerificationSuccess(totalCount, CODE_ID, limit);
-          showValidScan();
+          showValidScan(cfg, totalCount);
           order = 3;
         }
 
