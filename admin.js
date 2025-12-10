@@ -981,8 +981,16 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       Math.max(1, parseInt(el("scanLimit").value, 10) || 3);
     const apiBase = resolveApiBase();
     const baseUrl = `${resolveServerOrigin()}/index.html`;
+    // 如果 API 地址是 localhost，给出警告
+    if (apiBase && (apiBase.includes("localhost") || apiBase.includes("127.0.0.1"))) {
+      const confirmMsg = `警告：您配置的 API 地址是 ${apiBase}，这是本地地址。\n\n如果您的 API 部署在远程服务器上，请使用实际的 API 地址（如 Cloudflare Workers URL 或您的 API 域名）。\n\n如果 API 部署在同一个域名下，可以留空此字段使用相对路径。\n\n是否继续使用 ${apiBase}？`;
+      if (!confirm(confirmMsg)) {
+        return; // 用户取消，不生成二维码
+      }
+    }
     // 确保URL包含apiBase参数，这样扫描时才能正确调用API
-    const baseUrlWithApi = apiBase
+    // 如果 apiBase 为空，不添加 api 参数，使用相对路径
+    const baseUrlWithApi = apiBase && !apiBase.includes("localhost") && !apiBase.includes("127.0.0.1")
       ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}api=${encodeURIComponent(
           apiBase
         )}`
@@ -1046,7 +1054,13 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
         const hostInput = el("serverHost");
         if (hostInput && !hostInput.value) hostInput.value = "miraclewhite.top";
         const apiInput = el("apiBase");
-        if (apiInput && !apiInput.value) apiInput.value = API_DEFAULT;
+        // 不设置默认值，让用户手动配置，或者留空使用相对路径
+        // 如果留空，API 会使用相对路径（假设部署在同一个域名下）
+        // 如果填写了 localhost，说明是本地开发，需要用户手动修改为实际的 API 地址
+        if (apiInput && !apiInput.value) {
+          // 提示用户：如果 API 部署在同一个域名下，可以留空；否则填写完整的 API 地址
+          apiInput.placeholder = "留空则使用相对路径 (/api/...)，或填写完整 API 地址";
+        }
         loadConfig(DEFAULT_PID);
         refreshStats();
         updateQrUrl();

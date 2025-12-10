@@ -26,7 +26,15 @@
   function apiPath(path) {
     if (!path) return "/";
     const normalized = path.startsWith("/") ? path : `/${path}`;
-    if (!API_BASE) return normalized;
+    if (!API_BASE) {
+      // 如果没有配置 API_BASE，使用相对路径（假设 API 部署在同一个域名下）
+      return normalized;
+    }
+    // 如果 API_BASE 是相对路径（以 / 开头），直接拼接
+    if (API_BASE.startsWith("/")) {
+      return `${API_BASE}${normalized}`;
+    }
+    // 否则使用完整的 URL
     return `${API_BASE}${normalized}`;
   }
 
@@ -367,13 +375,19 @@
 
   async function fetchCodeConfig(codeId) {
     try {
-      const resp = await fetch(
-        apiPath(`/api/code/${encodeURIComponent(codeId)}`)
-      );
-      if (!resp.ok) return null;
+      const apiUrl = API_BASE
+        ? apiPath(`/api/code/${encodeURIComponent(codeId)}`)
+        : `/api/code/${encodeURIComponent(codeId)}`;
+      console.log("获取代码配置:", apiUrl, { codeId });
+      const resp = await fetch(apiUrl);
+      if (!resp.ok) {
+        console.warn("获取代码配置失败", { status: resp.status, codeId });
+        return null;
+      }
       const data = await resp.json();
       return data && data.ok ? data.config : null;
     } catch (e) {
+      console.warn("获取代码配置异常", { codeId, error: e.message });
       return null;
     }
   }
@@ -399,28 +413,35 @@
     const apiUrl = apiPath("/api/scan");
     console.log("调用API:", apiUrl, { codeId, deviceId, API_BASE });
 
-    // 如果 API_BASE 为空，说明没有配置 API 地址，无法调用服务器 API
-    if (!API_BASE) {
-      console.warn(
-        "API_BASE 为空，无法调用服务器 API。请确保二维码 URL 中包含 api 参数。"
-      );
-      throw new Error("API_BASE_NOT_CONFIGURED");
-    }
+    // 如果 API_BASE 为空，使用相对路径（假设 API 部署在同一个域名下）
+    // 这样即使没有配置 API 地址，也可以尝试调用同域名下的 API
+    const finalApiUrl = API_BASE ? apiUrl : "/api/scan";
+    console.log("最终API地址:", finalApiUrl);
 
-    const resp = await fetch(apiUrl, {
+    const resp = await fetch(finalApiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ codeId, deviceId }),
     });
     if (!resp.ok) {
       const text = await resp.text();
+      let errorMessage = text || "SCAN_FAILED";
+      try {
+        const errorData = JSON.parse(text);
+        if (errorData.error) {
+          errorMessage = JSON.stringify({ ok: false, error: errorData.error });
+        }
+      } catch (e) {
+        // 如果不是 JSON，使用原始文本
+      }
       console.error("API调用失败", {
         status: resp.status,
         statusText: resp.statusText,
-        error: text,
-        apiUrl,
+        error: errorMessage,
+        apiUrl: finalApiUrl,
+        codeId,
       });
-      throw new Error(text || "SCAN_FAILED");
+      throw new Error(errorMessage);
     }
     const data = await resp.json();
     console.log("API响应数据", data);
