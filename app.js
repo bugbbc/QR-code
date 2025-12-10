@@ -714,8 +714,8 @@
       scanCountEl.textContent = scanCount || 1;
     }
 
-    // 判断是否超过扫描限制
-    const isExceeded = scanCount > scanLimit;
+    // 判断是否超过或达到扫描限制（服务端总数不会超过限制，需要 >= 才能触发）
+    const isExceeded = scanCount >= scanLimit;
 
     // 显示/隐藏图标
     const checkmarkIcon = document.getElementById("checkmark-icon");
