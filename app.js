@@ -563,7 +563,10 @@
         }
       } else {
         // 如果JsBarcode还没加载，等待加载完成后再生成
+        let attempts = 0;
+        const maxAttempts = 50; // 最多尝试5秒（50 * 100ms）
         const checkJsBarcode = setInterval(() => {
+          attempts++;
           if (typeof JsBarcode !== "undefined") {
             clearInterval(checkJsBarcode);
             try {
@@ -575,13 +578,31 @@
                 background: "#ffffff",
                 lineColor: "#000000",
               });
+              console.log("条形码生成成功");
             } catch (e) {
               console.error("Barcode generation failed:", e);
+              // 如果EAN13失败，尝试CODE128
+              try {
+                JsBarcode(svg, barcodeNumber, {
+                  format: "CODE128",
+                  width: 2,
+                  height: 80,
+                  displayValue: false,
+                  background: "#ffffff",
+                  lineColor: "#000000",
+                });
+                console.log("条形码生成成功（使用CODE128格式）");
+              } catch (e2) {
+                console.error("条形码生成失败（所有格式）:", e2);
+              }
             }
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkJsBarcode);
+            console.warn("JsBarcode库加载超时，条形码可能无法显示");
+            // 显示一个占位符
+            svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">Barcode loading...</text>`;
           }
         }, 100);
-        // 10秒后停止检查
-        setTimeout(() => clearInterval(checkJsBarcode), 10000);
       }
     }
 
@@ -642,13 +663,15 @@
       }
     }
 
-    // 超过限制时隐藏条形码
+    // 确保条形码容器可见（除非超过限制）
     const barcodeContainer = document.querySelector(".barcode-container");
     if (barcodeContainer) {
       if (isExceeded) {
         barcodeContainer.classList.add("hidden");
       } else {
+        // 确保条形码容器显示
         barcodeContainer.classList.remove("hidden");
+        barcodeContainer.style.display = "flex";
       }
     }
 
@@ -689,8 +712,13 @@
       }
     }
 
-    // 生成条形码
-    generateBarcode(codeId || CODE_ID);
+    // 生成条形码（只有在未超过限制时才生成）
+    if (!isExceeded) {
+      // 延迟生成条形码，确保页面已完全渲染
+      setTimeout(() => {
+        generateBarcode(codeId || CODE_ID);
+      }, 100);
+    }
   }
 
   function showFirstScan(cfg, scanCount = 1) {
@@ -861,9 +889,9 @@
 
   async function handleTokenFlow(cfg, did) {
     const bundle = resolveInitialTokenBundle(did);
-    if (!bundle || !bundle.payload) return false;
 
     // 如果有CODE_ID，总是使用服务器API记录扫描（这是唯一真实来源）
+    // 无论是否有token，只要有CODE_ID就必须调用API
     if (CODE_ID) {
       try {
         const scanResult = await recordScanRemote(CODE_ID, did);
@@ -909,19 +937,29 @@
         return true;
       } catch (err) {
         console.error("Remote scan failed:", err);
-        // API调用失败时，显示错误信息，但仍然尝试使用token逻辑作为fallback
-        const currentStats = applyPayloadState(bundle.payload, cfg);
-        if (currentStats) {
-          renderScanCounter(
-            currentStats.limit,
-            currentStats.remaining,
-            currentStats.used
-          );
-          updateScanHint(currentStats.used, currentStats.limit);
+        // API调用失败时，显示错误信息
+        const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
+        renderScanCounter(limit, limit, 0);
+        counterDetailEl.textContent = `Error: Unable to record scan. Please try again.`;
+        // 如果有token，仍然可以显示token逻辑作为fallback
+        if (bundle && bundle.payload) {
+          const currentStats = applyPayloadState(bundle.payload, cfg);
+          if (currentStats) {
+            renderScanCounter(
+              currentStats.limit,
+              currentStats.remaining,
+              currentStats.used
+            );
+            updateScanHint(currentStats.used, currentStats.limit);
+          }
         }
-        // 继续执行token逻辑作为fallback
+        // 返回false，让handleLegacyFlow处理（但handleLegacyFlow也会检查CODE_ID，所以不会重复调用）
+        return false;
       }
     }
+
+    // 如果没有CODE_ID，检查是否有token
+    if (!bundle || !bundle.payload) return false;
 
     // 没有CODE_ID时，使用token逻辑（纯客户端逻辑）
     const currentStats = applyPayloadState(bundle.payload, cfg);
