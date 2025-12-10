@@ -12,15 +12,13 @@ async function signPayload(payload, secret) {
     ["sign"]
   );
 
-  // 规范化 JSON (简单版)
-  const body = JSON.stringify(payload); // 注意：Python版做了key排序，JS通常不需要严格一致，只要解签时一致即可
+  const body = JSON.stringify(payload);
   const bodyB64 = btoa(body)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 
   const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-  // 转 hex
   const hashArray = Array.from(new Uint8Array(signature));
   const sigHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
@@ -28,21 +26,16 @@ async function signPayload(payload, secret) {
 }
 
 // 生成唯一的二维码ID
-// 使用时间戳 + 随机数 + 产品ID哈希，确保每个产品都有唯一的二维码
 function generateId(length, productId = "") {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-  // 使用时间戳（毫秒）的后6位作为基础
   const timestamp = Date.now().toString(36).toUpperCase().slice(-6);
 
-  // 生成随机部分
   let randomPart = "";
-  const randomLength = length - timestamp.length - 2; // 保留2位给产品ID哈希
+  const randomLength = length - timestamp.length - 2;
   for (let i = 0; i < randomLength; i++) {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  // 如果有产品ID，添加产品ID的哈希值（取前2位）
   let productHash = "";
   if (productId) {
     let hash = 0;
@@ -60,10 +53,8 @@ function generateId(length, productId = "") {
     productHash = randomPart.slice(0, 2);
   }
 
-  // 组合：时间戳 + 产品哈希 + 随机数
   const result = (timestamp + productHash + randomPart).slice(0, length);
 
-  // 如果长度不够，用随机字符填充
   if (result.length < length) {
     const padding = length - result.length;
     let paddingStr = "";
@@ -76,30 +67,44 @@ function generateId(length, productId = "") {
   return result;
 }
 
-export async function onRequestPost(context) {
+// 统一入口：处理所有方法
+export async function onRequest(context) {
+  const { request } = context;
+
+  // 只允许 POST，其余方法直接 405
+  if (request.method !== "POST") {
+    return new Response("Method Not Allowed", {
+      status: 405,
+      headers: { Allow: "POST" },
+    });
+  }
+
+  // 真正的业务逻辑
+  return handlePost(context);
+}
+
+async function handlePost(context) {
   const { request, env } = context;
   try {
     const body = await request.json();
+
     const productId = body.productId || "default-product";
     const quantity = Math.max(1, Math.min(parseInt(body.quantity) || 1, 1000));
     const scanLimit = Math.max(1, parseInt(body.scanLimit) || 3);
     const baseUrl = body.baseUrl;
     const config = body.config || {};
-    const tokenSecret = env.TOKEN_SECRET || "dev-secret-key"; // 建议在后台设置环境变量
+    const tokenSecret = env.TOKEN_SECRET || "dev-secret-key";
 
     const created = [];
-    const usedIds = new Set(); // 用于检查重复
+    const usedIds = new Set();
 
     for (let i = 0; i < quantity; i++) {
       let codeId;
       let attempts = 0;
-      const maxAttempts = 100; // 最多尝试100次
+      const maxAttempts = 100;
 
-      // 生成唯一ID，确保不重复
-      // 使用时间戳（微秒级）+ 产品ID + 索引 + 随机数确保唯一性
-      // 每次循环都重新获取时间戳，确保不同
       const baseTimestamp = Date.now();
-      const microTimestamp = baseTimestamp + i; // 为每个索引添加偏移，确保不同
+      const microTimestamp = baseTimestamp + i;
       const randomSuffix1 = Math.random()
         .toString(36)
         .substring(2, 6)
@@ -111,7 +116,6 @@ export async function onRequestPost(context) {
       const uniqueSeed = `${productId}-${microTimestamp}-${i}-${randomSuffix1}-${randomSuffix2}`;
 
       do {
-        // 每次尝试都使用新的随机数和尝试次数
         const attemptRandom = Math.random()
           .toString(36)
           .substring(2, 4)
@@ -119,7 +123,6 @@ export async function onRequestPost(context) {
         codeId = generateId(12, `${uniqueSeed}-${attemptRandom}-${attempts}`);
         attempts++;
 
-        // 如果尝试次数过多，使用更强的唯一性保证
         if (attempts > 10) {
           const extraRandom = Math.random()
             .toString(36)
@@ -134,7 +137,6 @@ export async function onRequestPost(context) {
         }
       } while (usedIds.has(codeId) && attempts < maxAttempts);
 
-      // 如果还是重复（理论上不应该发生），使用时间戳+随机数强制唯一
       if (usedIds.has(codeId)) {
         const timestampStr = microTimestamp
           .toString(36)
@@ -152,30 +154,29 @@ export async function onRequestPost(context) {
 
       usedIds.add(codeId);
 
+      const createdAt = new Date().toISOString();
       const codeData = {
         productId,
         scanLimit,
         totalCount: 0,
         deviceCounts: {},
         config,
-        createdAt: new Date().toISOString(),
+        createdAt,
         lastScanAt: null,
         disabled: false,
       };
 
-      // 生成 Token Payload
       const tokenPayload = {
         codeId,
         productId,
         remaining: scanLimit,
         scanLimit,
-        issuedAt: codeData.createdAt,
+        issuedAt: createdAt,
       };
 
-      // 签名 Token
       const token = await signPayload(tokenPayload, tokenSecret);
 
-      // 存入 KV
+      // 这里依赖 CODES_KV 绑定
       await env.CODES_KV.put(codeId, JSON.stringify(codeData));
 
       const row = {
@@ -183,8 +184,8 @@ export async function onRequestPost(context) {
         productId,
         scanLimit,
         totalCount: 0,
-        createdAt: codeData.createdAt,
-        token: token,
+        createdAt,
+        token,
         payload: tokenPayload,
       };
 
@@ -208,8 +209,12 @@ export async function onRequestPost(context) {
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ ok: false, error: err.message }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ ok: false, error: err.message || "INTERNAL_ERROR" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }
