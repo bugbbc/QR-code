@@ -641,7 +641,7 @@
       return;
     }
 
-    console.log("显示验证成功页面", { scanCount, codeId, scanLimit });
+    console.log("显示验证成功页面", { scanCount, codeId, scanLimit, CODE_ID });
 
     // 不隐藏其他内容，让主页面内容正常显示在下面
     // 只隐藏scan-counter（因为验证页面已经显示了扫描信息）
@@ -886,6 +886,8 @@
   function applyPayloadState(payload, cfg) {
     const stats = statsFromPayload(payload);
     if (!stats) return null;
+    // 注意：这个函数只在没有CODE_ID时使用（纯token逻辑）
+    // 如果有CODE_ID，应该使用服务器返回的totalCount，而不是token中的used
     renderScanCounter(stats.limit, stats.remaining, stats.used);
     updateScanHint(stats.used, stats.limit);
     if (stats.remaining <= 0) {
@@ -898,8 +900,12 @@
     if (stats.order === 1) {
       showFirstScan(cfg, stats.used);
     } else if (stats.order === 2) {
+      // 第二次扫描时也要显示验证页面，并传入实际的扫描次数
+      showVerificationSuccess(stats.used, payload.codeId, stats.limit);
       showSecondScan(cfg);
     } else {
+      // 其他有效扫描也要显示验证页面，并传入实际的扫描次数
+      showVerificationSuccess(stats.used, payload.codeId, stats.limit);
       showValidScan(cfg);
     }
     return stats;
@@ -929,8 +935,8 @@
 
         const remaining = Math.max(0, limit - totalCount);
         renderScanCounter(limit, remaining, totalCount);
-        updateScanHint(totalCount, limit);
 
+        // 先显示验证页面，使用服务器返回的totalCount，确保顶部和底部显示一致
         let order = 3;
         if (status === "invalid" || totalCount >= limit) {
           // 超过限制时显示验证页面（红色叉）
@@ -953,6 +959,10 @@
           showValidScan();
           order = 3;
         }
+
+        // 最后更新底部提示，使用相同的totalCount，确保一致性
+        updateScanHint(totalCount, limit);
+
         await updateStats(order);
 
         // 如果有token，保存token信息（用于后续可能的token刷新）
@@ -966,18 +976,7 @@
         const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
         renderScanCounter(limit, limit, 0);
         counterDetailEl.textContent = `Error: Unable to record scan. Please try again.`;
-        // 如果有token，仍然可以显示token逻辑作为fallback
-        if (bundle && bundle.payload) {
-          const currentStats = applyPayloadState(bundle.payload, cfg);
-          if (currentStats) {
-            renderScanCounter(
-              currentStats.limit,
-              currentStats.remaining,
-              currentStats.used
-            );
-            updateScanHint(currentStats.used, currentStats.limit);
-          }
-        }
+        // API调用失败时，不显示token逻辑作为fallback，因为token逻辑使用的是客户端数据，不准确
         // 返回false，让handleLegacyFlow处理（但handleLegacyFlow也会检查CODE_ID，所以不会重复调用）
         return false;
       }
@@ -1074,8 +1073,8 @@
 
         const remaining = Math.max(0, limit - totalCount);
         renderScanCounter(limit, remaining, totalCount);
-        updateScanHint(totalCount, limit);
 
+        // 先显示验证页面，使用服务器返回的totalCount，确保顶部和底部显示一致
         let order = 3;
         if (status === "invalid" || totalCount >= limit) {
           // 超过限制时显示验证页面（红色叉）
@@ -1098,6 +1097,10 @@
           showValidScan();
           order = 3;
         }
+
+        // 最后更新底部提示，使用相同的totalCount，确保一致性
+        updateScanHint(totalCount, limit);
+
         await updateStats(order);
         return;
       } catch (err) {
