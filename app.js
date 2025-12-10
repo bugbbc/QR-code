@@ -13,6 +13,16 @@
   const API_BASE_PARAM = qs.get("api") || qs.get("apiBase") || "";
   const API_BASE = API_BASE_PARAM ? API_BASE_PARAM.replace(/\/$/, "") : "";
 
+  // 调试信息：打印URL参数
+  console.log("URL参数解析", {
+    PRODUCT_ID,
+    CODE_ID,
+    TOKEN_PARAM: TOKEN_PARAM ? "存在" : "不存在",
+    API_BASE_PARAM,
+    API_BASE,
+    fullUrl: location.href,
+  });
+
   function apiPath(path) {
     if (!path) return "/";
     const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -822,9 +832,13 @@
   function updateScanHint(count, limit) {
     const box = document.getElementById("scan-hint");
     const text = document.getElementById("scan-hint-text");
-    if (!box || !text) return;
+    if (!box || !text) {
+      console.warn("scan-hint 元素未找到");
+      return;
+    }
     box.classList.remove("hidden");
     const capped = Math.min(count, limit);
+    console.log("更新扫描提示", { count, limit, capped });
     if (count >= limit) {
       box.classList.add("warning");
       text.textContent = `This QR code is void on this device · scanned ${capped}/${limit} times.`;
@@ -1005,7 +1019,18 @@
         // API调用失败时，显示错误信息
         const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
         renderScanCounter(limit, limit, 0);
-        counterDetailEl.textContent = `Error: Unable to record scan. Please try again.`;
+        if (counterDetailEl) {
+          if (err.message === "API_BASE_NOT_CONFIGURED") {
+            counterDetailEl.textContent = `Error: API address not configured. Please ensure the QR code URL contains the 'api' parameter.`;
+          } else {
+            counterDetailEl.textContent = `Error: Unable to record scan. ${
+              err.message || "Please try again."
+            }`;
+          }
+        }
+        // 隐藏扫描提示
+        const scanHint = document.getElementById("scan-hint");
+        if (scanHint) scanHint.classList.add("hidden");
         // API调用失败时，不显示token逻辑作为fallback，因为token逻辑使用的是客户端数据，不准确
         // 返回false，让handleLegacyFlow处理（但handleLegacyFlow也会检查CODE_ID，所以不会重复调用）
         return false;
@@ -1133,10 +1158,23 @@
         return;
       } catch (err) {
         console.error("Remote scan failed for CODE_ID:", CODE_ID, err);
-        // API调用失败时，显示错误信息，但仍然显示初始状态
+        // API调用失败时，显示错误信息
         const limit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
         renderScanCounter(limit, limit, 0);
-        counterDetailEl.textContent = `Error: Unable to record scan. Please try again.`;
+        if (counterDetailEl) {
+          if (err.message === "API_BASE_NOT_CONFIGURED") {
+            counterDetailEl.textContent = `Error: API address not configured. Please ensure the QR code URL contains the 'api' parameter.`;
+          } else {
+            counterDetailEl.textContent = `Error: Unable to record scan. ${
+              err.message || "Please try again."
+            }`;
+          }
+        }
+        // 隐藏扫描提示
+        const scanHint = document.getElementById("scan-hint");
+        if (scanHint) scanHint.classList.add("hidden");
+        // 显示验证页面，但使用错误状态
+        showVerificationSuccess(0, CODE_ID, limit);
         return;
       }
     }
@@ -1245,15 +1283,27 @@
     const initialLimit = Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
     if (counterRemainingEl && counterDetailEl) {
       renderScanCounter(initialLimit, initialLimit, 0);
+      // 如果有 CODE_ID，显示正在验证的状态
+      if (CODE_ID) {
+        counterDetailEl.textContent = "AUTHENTICATING PRODUCT ID...";
+      }
     }
 
     const did = getDeviceId();
     addDevice(STORAGE_SCOPE, did);
 
     // 处理扫码逻辑：如果有CODE_ID，总是调用服务器API；否则使用本地逻辑
+    console.log("开始处理扫描逻辑", {
+      CODE_ID,
+      API_BASE,
+      TOKEN_PARAM: !!TOKEN_PARAM,
+    });
     const handled = await handleTokenFlow(cfg, did);
     if (!handled) {
+      console.log("handleTokenFlow 返回 false，调用 handleLegacyFlow");
       await handleLegacyFlow(cfg, did);
+    } else {
+      console.log("handleTokenFlow 处理成功");
     }
 
     // 注意：不要在这里再次调用recordScanRemote，因为handleTokenFlow和handleLegacyFlow已经调用过了
