@@ -973,12 +973,19 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       Math.max(1, parseInt(el("codeScanLimit").value, 10)) ||
       Math.max(1, parseInt(el("scanLimit").value, 10) || 3);
     const apiBase = resolveApiBase();
+    const baseUrl = `${resolveServerOrigin()}/index.html`;
+    // 确保URL包含apiBase参数，这样扫描时才能正确调用API
+    const baseUrlWithApi = apiBase
+      ? `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}api=${encodeURIComponent(
+          apiBase
+        )}`
+      : baseUrl;
     const payload = {
       productId: pid,
       quantity,
       scanLimit: limit,
       config: currentConfigFromForm(),
-      baseUrl: `${resolveServerOrigin()}/index.html`,
+      baseUrl: baseUrlWithApi,
     };
     const resp = await fetch(`${apiBase}/api/admin/codes/bulk`, {
       method: "POST",

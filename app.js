@@ -378,16 +378,24 @@
 
   async function recordScanRemote(codeId, deviceId) {
     if (!codeId || !deviceId) throw new Error("MISSING_PARAMS");
-    const resp = await fetch(apiPath("/api/scan"), {
+    const apiUrl = apiPath("/api/scan");
+    console.log("调用API:", apiUrl, { codeId, deviceId });
+    const resp = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ codeId, deviceId }),
     });
     if (!resp.ok) {
       const text = await resp.text();
+      console.error("API调用失败", {
+        status: resp.status,
+        statusText: resp.statusText,
+        error: text,
+      });
       throw new Error(text || "SCAN_FAILED");
     }
     const data = await resp.json();
+    console.log("API响应数据", data);
     if (!data.ok) throw new Error(data.error || "SCAN_FAILED");
     return data;
   }
@@ -894,11 +902,14 @@
     // 无论是否有token，只要有CODE_ID就必须调用API
     if (CODE_ID) {
       try {
+        console.log("开始调用API记录扫描", { CODE_ID, deviceId: did });
         const scanResult = await recordScanRemote(CODE_ID, did);
+        console.log("API返回结果", scanResult);
         const limit =
           scanResult.scanLimit || Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
         const totalCount = scanResult.totalCount || 0;
         const status = scanResult.status || "valid";
+        console.log("解析后的扫描数据", { limit, totalCount, status });
 
         // 更新配置（服务器可能返回更新的配置）
         if (scanResult.config) {
@@ -1025,11 +1036,21 @@
     // 如果有code参数，必须调用服务器API记录扫描（这是唯一真实来源）
     if (CODE_ID) {
       try {
+        console.log("handleLegacyFlow: 开始调用API记录扫描", {
+          CODE_ID,
+          deviceId: did,
+        });
         const scanResult = await recordScanRemote(CODE_ID, did);
+        console.log("handleLegacyFlow: API返回结果", scanResult);
         const limit =
           scanResult.scanLimit || Math.max(1, parseInt(cfg.scanLimit, 10) || 3);
         const totalCount = scanResult.totalCount || 0;
         const status = scanResult.status || "valid";
+        console.log("handleLegacyFlow: 解析后的扫描数据", {
+          limit,
+          totalCount,
+          status,
+        });
 
         // 更新配置（服务器可能返回更新的配置）
         if (scanResult.config) {
