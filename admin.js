@@ -998,14 +998,11 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     }
     // 确保URL包含apiBase参数，这样扫描时才能正确调用API
     // 如果 apiBase 为空，不添加 api 参数，使用相对路径
-    const baseUrlWithApi =
-      apiBase &&
-      !apiBase.includes("localhost") &&
-      !apiBase.includes("127.0.0.1")
-        ? `${baseUrl}${
-            baseUrl.includes("?") ? "&" : "?"
-          }api=${encodeURIComponent(apiBase)}`
-        : baseUrl;
+    const baseUrlWithApi = apiBase
+      ? `${baseUrl}${
+          baseUrl.includes("?") ? "&" : "?"
+        }api=${encodeURIComponent(apiBase)}`
+      : baseUrl;
     const payload = {
       productId: pid,
       quantity,
@@ -1014,8 +1011,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       baseUrl: baseUrlWithApi,
     };
     const bulkUrl = apiBase
-      ? `${apiBase}/worker/api/codes/bulk-generate`
-      : `/worker/api/codes/bulk-generate`;
+      ? `${apiBase}/api/codes/bulk-generate`
+      : `/api/codes/bulk-generate`;
 
     const resp = await fetch(bulkUrl, {
       method: "POST",
