@@ -7,13 +7,37 @@ export async function getCode(env, codeId) {
   return raw ? JSON.parse(raw) : null;
 }
 
-export async function putCode(env, codeId, data) {
+/**
+ * 保存单个 code；默认会维护索引，可通过 skipIndex 跳过（用于批量写入）。
+ */
+export async function putCode(env, codeId, data, { skipIndex = false } = {}) {
   await env.CODES_KV.put(codeId, JSON.stringify(data));
-  // 更新索引（简易做法）
+  if (skipIndex) return;
+
   const idxRaw = await env.CODES_KV.get(INDEX_KEY);
   const idx = idxRaw ? JSON.parse(idxRaw) : [];
   if (!idx.includes(codeId)) {
     idx.push(codeId);
+    await env.CODES_KV.put(INDEX_KEY, JSON.stringify(idx));
+  }
+}
+
+/**
+ * 一次性把多个 codeId 追加到索引，避免批量生成时频繁读写 KV。
+ */
+export async function appendToIndex(env, codeIds = []) {
+  if (!codeIds.length) return;
+  const idxRaw = await env.CODES_KV.get(INDEX_KEY);
+  const idx = idxRaw ? JSON.parse(idxRaw) : [];
+  const set = new Set(idx);
+  let changed = false;
+  for (const id of codeIds) {
+    if (set.has(id)) continue;
+    idx.push(id);
+    set.add(id);
+    changed = true;
+  }
+  if (changed) {
     await env.CODES_KV.put(INDEX_KEY, JSON.stringify(idx));
   }
 }
