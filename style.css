@@ -784,3 +784,33 @@ body {
     max-width: 250px;
   }
 }
+/* ===== Mobile carousel fix (place at END of file) ===== */
+@media (max-width: 768px) {
+  /* 让轮播容器高度更适配手机（可按你审美改比例） */
+  .module-media {
+    height: auto;
+    aspect-ratio: 16 / 9; /* 你也可以改成 4/3、1/1 等 */
+    max-height: 60vh; /* 防止占满整屏 */
+  }
+
+  .carousel,
+  .carousel-track,
+  .carousel-item {
+    height: 100%;
+  }
+
+  /* 居中展示，避免贴边 */
+  .carousel-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 关键：不裁切、不拉伸，完整显示 */
+  .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 完整显示图片 */
+    object-position: center; /* 居中 */
+  }
+}
