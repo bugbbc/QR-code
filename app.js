@@ -307,7 +307,9 @@
       const item = document.createElement("div");
       item.className = "carousel-item";
       const img = document.createElement("img");
-      img.src = src + `?t=${Date.now()}`; // cache bust
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = src; // 上线建议不要 cache bust
       item.appendChild(img);
       track.appendChild(item);
     });
