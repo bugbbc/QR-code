@@ -159,33 +159,6 @@ body {
   height: 400px;
 }
 
-@media (max-width: 768px) {
-  .module-media {
-    height: 300px;
-  }
-  .carousel-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .carousel-item img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    margin: auto;
-  }
-  .carousel-btn {
-    font-size: 24px;
-    padding: 14px;
-  }
-  .carousel-dots {
-    bottom: 12px;
-  }
-}
 
 /* 文本区域 */
 .module-text {
@@ -305,6 +278,36 @@ body {
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .module-media {
+    height: 300px;
+  }
+  .carousel,
+  .carousel-track,
+  .carousel-item {
+    height: 100%;
+  }
+  .carousel-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+  .carousel-btn {
+    font-size: 24px;
+    padding: 14px;
+  }
+  .carousel-dots {
+    bottom: 12px;
+  }
 }
 .dot {
   width: 8px;
