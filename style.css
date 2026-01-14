@@ -809,6 +809,8 @@ body {
   .carousel-item img {
     width: 100% !important;
     height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     object-fit: contain !important;
     object-position: center;
     display: block;
