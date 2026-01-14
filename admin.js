@@ -346,9 +346,6 @@
       "up_2.jpg",
       "up_3.jpg",
       "up_4.jpg",
-      "up_5.jpg",
-      "up_6.jpg",
-      "up_7.jpg",
     ];
     const downImageNames = [
       "down_1.jpg",
@@ -357,6 +354,10 @@
       "down_4.jpg",
       "down_5.jpg",
       "down_6.jpg",
+      "down_7.jpg",
+      "down_8.jpg",
+      "down_9.jpg",
+      "down_10.jpg",
     ];
 
     const uploadedKeys = Object.keys(uploadedImages);

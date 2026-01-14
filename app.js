@@ -1278,9 +1278,6 @@
       "figure/up_2.jpg",
       "figure/up_3.jpg",
       "figure/up_4.jpg",
-      "figure/up_5.jpg",
-      "figure/up_6.jpg",
-      "figure/up_7.jpg",
     ]);
     renderCarousel("carousel-bottom", [
       "figure/down_1.jpg",
@@ -1289,6 +1286,10 @@
       "figure/down_4.jpg",
       "figure/down_5.jpg",
       "figure/down_6.jpg",
+      "figure/down_7.jpg",
+      "figure/down_8.jpg",
+      "figure/down_9.jpg",
+      "figure/down_10.jpg",
     ]);
 
     productMainEl = document.getElementById("product-main");
