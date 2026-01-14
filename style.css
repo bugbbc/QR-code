@@ -159,11 +159,18 @@ body {
   height: 400px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .module-media {
-    height: 300px;
+    height: auto;
+  }
+  .carousel,
+  .carousel-track,
+  .carousel-item {
+    height: auto;
   }
   .carousel-item img {
+    width: 100%;
+    height: auto;
     object-fit: contain;
   }
   .carousel-btn {
