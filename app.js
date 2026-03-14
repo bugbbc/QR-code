@@ -1282,6 +1282,7 @@
       "figure/up_4.jpg",
       "figure/up_5.jpg",
       "figure/up_6.jpg",
+      "figure/up_6.jpg",
     ]);
     renderCarousel("carousel-bottom", [
       "figure/down_1.jpg",
