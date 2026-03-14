@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css?v=20250114-3" />
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script> -->
   </head>
   <body translate="no">
     <div id="loading-overlay">
@@ -84,10 +84,12 @@
 
         <!-- 条形码 -->
         <div class="barcode-container">
-          <svg id="barcode-svg" class="barcode-svg"></svg>
-          <div class="barcode-numbers" id="barcode-numbers">
-            6 | 970244 | 633822
-          </div>
+          <img
+            id="barcode-image"
+            class="barcode-image"
+            src="./figure/barcode.png"
+            alt="Product Barcode"
+          />
         </div>
       </div>
     </div>

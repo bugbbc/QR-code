@@ -166,7 +166,7 @@
     if (!token || !payload) return;
     localStorage.setItem(
       LS_KEYS.token(scope, did),
-      JSON.stringify({ token, payload })
+      JSON.stringify({ token, payload }),
     );
   }
 
@@ -175,7 +175,7 @@
     const limit = Math.max(1, parseInt(payload.scanLimit, 10) || 3);
     const remaining = Math.max(
       0,
-      Math.min(limit, parseInt(payload.remaining, 10) || 0)
+      Math.min(limit, parseInt(payload.remaining, 10) || 0),
     );
     const used = Math.min(limit, Math.max(0, limit - remaining));
     let order = 3;
@@ -271,7 +271,7 @@
     set.add(did);
     localStorage.setItem(
       LS_KEYS.devices(scope),
-      JSON.stringify(Array.from(set))
+      JSON.stringify(Array.from(set)),
     );
   }
   function deviceCount(scope) {
@@ -361,7 +361,7 @@
         (timer = setInterval(() => {
           index = (index + 1) % total;
           update();
-        }, autoplayMs))
+        }, autoplayMs)),
     );
     update();
   }
@@ -455,7 +455,7 @@
     // 1. 保持顶部标题不变，使用HTML格式支持换行和斜体
     setHTML(
       "product-name",
-      "Improved composition with<br/><em>finest ingredients.</em>"
+      "Improved composition with<br/><em>finest ingredients.</em>",
     );
     setText("hero-art", "Premium • Elegant • Reliable");
 
@@ -529,160 +529,160 @@
     }
   }
 
-  // 生成条形码（基于二维码ID，实现一物一码）
-  function generateBarcode(codeId) {
-    if (!codeId) {
-      // 如果没有codeId，生成一个基于时间戳的临时ID
-      codeId = `TEMP-${Date.now()}`;
-    }
+  // // 生成条形码（基于二维码ID，实现一物一码）
+  // function generateBarcode(codeId) {
+  //   if (!codeId) {
+  //     // 如果没有codeId，生成一个基于时间戳的临时ID
+  //     codeId = `TEMP-${Date.now()}`;
+  //   }
 
-    // 将codeId转换为条形码数字（EAN-13格式：13位数字）
-    // 使用哈希函数将codeId转换为数字字符串
-    function codeIdToBarcodeNumber(codeId) {
-      // 简单的哈希函数，将字符串转换为数字
-      let hash = 0;
-      for (let i = 0; i < codeId.length; i++) {
-        const char = codeId.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash = hash & hash; // 转换为32位整数
-      }
+  //   // 将codeId转换为条形码数字（EAN-13格式：13位数字）
+  //   // 使用哈希函数将codeId转换为数字字符串
+  //   function codeIdToBarcodeNumber(codeId) {
+  //     // 简单的哈希函数，将字符串转换为数字
+  //     let hash = 0;
+  //     for (let i = 0; i < codeId.length; i++) {
+  //       const char = codeId.charCodeAt(i);
+  //       hash = (hash << 5) - hash + char;
+  //       hash = hash & hash; // 转换为32位整数
+  //     }
 
-      // 取绝对值并转换为字符串
-      const numStr = Math.abs(hash).toString();
+  //     // 取绝对值并转换为字符串
+  //     const numStr = Math.abs(hash).toString();
 
-      // 生成13位EAN-13格式的条形码数字
-      // 格式：前缀(1位) + 厂商代码(6位) + 产品代码(5位) + 校验位(1位)
-      let barcode = "6"; // 前缀（6表示美国/加拿大）
+  //     // 生成13位EAN-13格式的条形码数字
+  //     // 格式：前缀(1位) + 厂商代码(6位) + 产品代码(5位) + 校验位(1位)
+  //     let barcode = "6"; // 前缀（6表示美国/加拿大）
 
-      // 填充到12位
-      const padded = numStr.padStart(12, "0").substring(0, 12);
-      barcode += padded;
+  //     // 填充到12位
+  //     const padded = numStr.padStart(12, "0").substring(0, 12);
+  //     barcode += padded;
 
-      // 计算EAN-13校验位
-      let sum = 0;
-      for (let i = 0; i < 12; i++) {
-        const digit = parseInt(barcode[i], 10);
-        if (isNaN(digit)) {
-          // 如果某个字符不是数字，使用0
-          barcode = barcode.substring(0, i) + "0" + barcode.substring(i + 1);
-          sum += 0;
-        } else {
-          sum += i % 2 === 0 ? digit : digit * 3;
-        }
-      }
-      const checkDigit = (10 - (sum % 10)) % 10;
-      barcode += checkDigit.toString();
+  //     // 计算EAN-13校验位
+  //     let sum = 0;
+  //     for (let i = 0; i < 12; i++) {
+  //       const digit = parseInt(barcode[i], 10);
+  //       if (isNaN(digit)) {
+  //         // 如果某个字符不是数字，使用0
+  //         barcode = barcode.substring(0, i) + "0" + barcode.substring(i + 1);
+  //         sum += 0;
+  //       } else {
+  //         sum += i % 2 === 0 ? digit : digit * 3;
+  //       }
+  //     }
+  //     const checkDigit = (10 - (sum % 10)) % 10;
+  //     barcode += checkDigit.toString();
 
-      // 验证条形码是13位纯数字
-      if (barcode.length !== 13 || !/^\d{13}$/.test(barcode)) {
-        // 如果生成失败，使用默认值
-        console.warn("条形码生成失败，使用默认值", barcode);
-        barcode = "6970244633822";
-      }
+  //     // 验证条形码是13位纯数字
+  //     if (barcode.length !== 13 || !/^\d{13}$/.test(barcode)) {
+  //       // 如果生成失败，使用默认值
+  //       console.warn("条形码生成失败，使用默认值", barcode);
+  //       barcode = "6970244633822";
+  //     }
 
-      return barcode;
-    }
+  //     return barcode;
+  //   }
 
-    const barcodeNumber = codeIdToBarcodeNumber(codeId);
+  //   const barcodeNumber = codeIdToBarcodeNumber(codeId);
 
-    // 格式化显示：6 | 970244 | 633822
-    const formatted = `${barcodeNumber[0]} | ${barcodeNumber.substring(
-      1,
-      7
-    )} | ${barcodeNumber.substring(7)}`;
+  //   // 格式化显示：6 | 970244 | 633822
+  //   const formatted = `${barcodeNumber[0]} | ${barcodeNumber.substring(
+  //     1,
+  //     7,
+  //   )} | ${barcodeNumber.substring(7)}`;
 
-    // 使用JsBarcode生成条形码
-    const svg = document.getElementById("barcode-svg");
-    if (svg) {
-      // 清空SVG内容
-      svg.innerHTML = "";
+  //   // 使用JsBarcode生成条形码
+  //   const svg = document.getElementById("barcode-svg");
+  //   if (svg) {
+  //     // 清空SVG内容
+  //     svg.innerHTML = "";
 
-      // 检查JsBarcode是否已加载
-      if (typeof JsBarcode !== "undefined") {
-        try {
-          JsBarcode(svg, barcodeNumber, {
-            format: "EAN13",
-            width: 2,
-            height: 80,
-            displayValue: false,
-            background: "#ffffff",
-            lineColor: "#000000",
-          });
-        } catch (e) {
-          console.warn(
-            "Barcode generation failed:",
-            e,
-            "Barcode number:",
-            barcodeNumber
-          );
-          // 如果生成失败，尝试使用CODE128格式
-          try {
-            JsBarcode(svg, barcodeNumber, {
-              format: "CODE128",
-              width: 2,
-              height: 80,
-              displayValue: false,
-              background: "#ffffff",
-              lineColor: "#000000",
-            });
-          } catch (e2) {
-            // 如果CODE128也失败，显示一个简单的条形码占位符
-            svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/>`;
-          }
-        }
-      } else {
-        // 如果JsBarcode还没加载，等待加载完成后再生成
-        let attempts = 0;
-        const maxAttempts = 50; // 最多尝试5秒（50 * 100ms）
-        const checkJsBarcode = setInterval(() => {
-          attempts++;
-          if (typeof JsBarcode !== "undefined") {
-            clearInterval(checkJsBarcode);
-            try {
-              JsBarcode(svg, barcodeNumber, {
-                format: "EAN13",
-                width: 2,
-                height: 80,
-                displayValue: false,
-                background: "#ffffff",
-                lineColor: "#000000",
-              });
-              console.log("条形码生成成功");
-            } catch (e) {
-              console.error("Barcode generation failed:", e);
-              // 如果EAN13失败，尝试CODE128
-              try {
-                JsBarcode(svg, barcodeNumber, {
-                  format: "CODE128",
-                  width: 2,
-                  height: 80,
-                  displayValue: false,
-                  background: "#ffffff",
-                  lineColor: "#000000",
-                });
-                console.log("条形码生成成功（使用CODE128格式）");
-              } catch (e2) {
-                console.error("条形码生成失败（所有格式）:", e2);
-              }
-            }
-          } else if (attempts >= maxAttempts) {
-            clearInterval(checkJsBarcode);
-            console.warn("JsBarcode库加载超时，条形码可能无法显示");
-            // 显示一个占位符
-            svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">Barcode loading...</text>`;
-          }
-        }, 100);
-      }
-    }
+  //     // 检查JsBarcode是否已加载
+  //     if (typeof JsBarcode !== "undefined") {
+  //       try {
+  //         JsBarcode(svg, barcodeNumber, {
+  //           format: "EAN13",
+  //           width: 2,
+  //           height: 80,
+  //           displayValue: false,
+  //           background: "#ffffff",
+  //           lineColor: "#000000",
+  //         });
+  //       } catch (e) {
+  //         console.warn(
+  //           "Barcode generation failed:",
+  //           e,
+  //           "Barcode number:",
+  //           barcodeNumber,
+  //         );
+  //         // 如果生成失败，尝试使用CODE128格式
+  //         try {
+  //           JsBarcode(svg, barcodeNumber, {
+  //             format: "CODE128",
+  //             width: 2,
+  //             height: 80,
+  //             displayValue: false,
+  //             background: "#ffffff",
+  //             lineColor: "#000000",
+  //           });
+  //         } catch (e2) {
+  //           // 如果CODE128也失败，显示一个简单的条形码占位符
+  //           svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/>`;
+  //         }
+  //       }
+  //     } else {
+  //       // 如果JsBarcode还没加载，等待加载完成后再生成
+  //       let attempts = 0;
+  //       const maxAttempts = 50; // 最多尝试5秒（50 * 100ms）
+  //       const checkJsBarcode = setInterval(() => {
+  //         attempts++;
+  //         if (typeof JsBarcode !== "undefined") {
+  //           clearInterval(checkJsBarcode);
+  //           try {
+  //             JsBarcode(svg, barcodeNumber, {
+  //               format: "EAN13",
+  //               width: 2,
+  //               height: 80,
+  //               displayValue: false,
+  //               background: "#ffffff",
+  //               lineColor: "#000000",
+  //             });
+  //             console.log("条形码生成成功");
+  //           } catch (e) {
+  //             console.error("Barcode generation failed:", e);
+  //             // 如果EAN13失败，尝试CODE128
+  //             try {
+  //               JsBarcode(svg, barcodeNumber, {
+  //                 format: "CODE128",
+  //                 width: 2,
+  //                 height: 80,
+  //                 displayValue: false,
+  //                 background: "#ffffff",
+  //                 lineColor: "#000000",
+  //               });
+  //               console.log("条形码生成成功（使用CODE128格式）");
+  //             } catch (e2) {
+  //               console.error("条形码生成失败（所有格式）:", e2);
+  //             }
+  //           }
+  //         } else if (attempts >= maxAttempts) {
+  //           clearInterval(checkJsBarcode);
+  //           console.warn("JsBarcode库加载超时，条形码可能无法显示");
+  //           // 显示一个占位符
+  //           svg.innerHTML = `<rect width="100%" height="80" fill="#f0f0f0"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">Barcode loading...</text>`;
+  //         }
+  //       }, 100);
+  //     }
+  //   }
 
-    // 更新条形码数字显示
-    const numbersEl = document.getElementById("barcode-numbers");
-    if (numbersEl) {
-      numbersEl.textContent = formatted;
-    }
+  //   // 更新条形码数字显示
+  //   const numbersEl = document.getElementById("barcode-numbers");
+  //   if (numbersEl) {
+  //     numbersEl.textContent = formatted;
+  //   }
 
-    return { barcodeNumber, formatted };
-  }
+  //   return { barcodeNumber, formatted };
+  // }
 
   // 显示验证成功页面
   function showVerificationSuccess(scanCount, codeId, scanLimit = 3) {
@@ -747,7 +747,7 @@
     // 更新状态文字
     const statusTitle = document.getElementById("verification-status-title");
     const statusDescription = document.getElementById(
-      "verification-status-description"
+      "verification-status-description",
     );
     const statusNote = document.getElementById("verification-status-note");
 
@@ -782,12 +782,12 @@
     }
 
     // 生成条形码（只有在未超过限制时才生成）
-    if (!isExceeded) {
-      // 延迟生成条形码，确保页面已完全渲染
-      setTimeout(() => {
-        generateBarcode(codeId || CODE_ID);
-      }, 100);
-    }
+    // if (!isExceeded) {
+    //   // 延迟生成条形码，确保页面已完全渲染
+    //   setTimeout(() => {
+    //     generateBarcode(codeId || CODE_ID);
+    //   }, 100);
+    // }
   }
 
   function showFirstScan(cfg, scanCount = 1) {
@@ -890,7 +890,7 @@
     const safeLimit = Math.max(1, limit || 1);
     const safeRemaining = Math.max(
       0,
-      Math.min(safeLimit, remaining ?? safeLimit)
+      Math.min(safeLimit, remaining ?? safeLimit),
     );
     const safeUsed = Math.max(0, Math.min(safeLimit, used ?? 0));
     counterRemainingEl.textContent = `${safeRemaining} left`;
@@ -1105,7 +1105,7 @@
         STORAGE_SCOPE,
         did,
         refreshed.token,
-        refreshed.payload
+        refreshed.payload,
       );
       const nextStats = applyPayloadState(refreshed.payload, cfg);
       if (nextStats) {
@@ -1280,6 +1280,8 @@
       "figure/up_2.jpg",
       "figure/up_3.jpg",
       "figure/up_4.jpg",
+      "figure/up_5.jpg",
+      "figure/up_6.jpg",
     ]);
     renderCarousel("carousel-bottom", [
       "figure/down_1.jpg",

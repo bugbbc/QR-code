@@ -159,7 +159,6 @@ body {
   height: 400px;
 }
 
-
 /* 文本区域 */
 .module-text {
   width: 100%;
@@ -770,6 +769,15 @@ body {
   letter-spacing: 2px;
   text-align: center;
   margin-top: 8px;
+}
+
+.barcode-image {
+  display: block;
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 10px;
+  object-fit: contain;
 }
 
 /* 响应式设计 */
