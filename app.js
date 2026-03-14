@@ -1295,6 +1295,7 @@
       "figure/down_8.jpg",
       "figure/down_9.jpg",
       "figure/down_10.jpg",
+      "figure/up_6.jpg",
     ]);
 
     productMainEl = document.getElementById("product-main");
