@@ -7,3 +7,9 @@ node_modules/
 *.swo
 *~
 
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
