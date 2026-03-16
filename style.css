@@ -742,7 +742,35 @@ body {
   font-style: italic;
   margin-bottom: 40px;
 }
+.homepage-feature-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+  background: #fff;
+}
 
+.feature-image-card {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.feature-image-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .homepage-feature-images {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px 16px 32px;
+  }
+}
 /* 条形码容器 */
 .barcode-container {
   margin-top: 40px;
